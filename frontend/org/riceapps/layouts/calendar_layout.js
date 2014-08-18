@@ -64,6 +64,10 @@ org.riceapps.layouts.CalendarLayout.Item.prototype.getCalendarTimes = function()
 /**
  * A calendar layout is responsible for positioning the items within a calendar. To position the items, simply call
  * relayout() provided both the calendar and its items implement the required interfaces.
+ *
+ * NOTE: This layout is still not **perfect**, but it works good in almost every case. Issues occur because calculating
+ * limit does not take into account things not in the row that affect layout of things extending into the row.
+ *
  * @param {!org.riceapps.layouts.CalendarLayout.Calendar} calendar
  * @constructor
  */
@@ -157,14 +161,14 @@ CalendarLayout.prototype.getLimit_ = function(matrix, item, day, start, end, off
 
   for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
     var changes = 0;
-    var last = undefined;
+    var last = null;
     for (var i = 0; i < matrix[day][hour].length; i++) {
       if (matrix[day][hour][i] !== last) {
         changes++;
       }
       last = matrix[day][hour][i];
     }
-
+    window.console.log('changes', changes);
     maxChanges = Math.max(changes, maxChanges);
   }
 
@@ -216,18 +220,18 @@ CalendarLayout.prototype.placeItem_ = function(matrix, items, item, time) {
     offset++;
   }
 
-  // Write the item into the marix.
-  /*var largestOffset = offset;
-  for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
-    largestOffset = Math.max(largestOffset, matrix[day][hour].length);
-  }*/
-
   for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
     // Ensure there is sufficient space.
     while (offset >= matrix[day][hour].length) {
       this.expandMatrix_(matrix);
     }
-    matrix[day][hour][offset] = item;
+    var initial = matrix[day][hour][offset];
+    for (var i = offset; i <  matrix[day][hour].length; i++) {
+      if (matrix[day][hour][i] === initial ||
+          matrix[day][hour][i] === null) {
+        matrix[day][hour][i] = item;
+      }
+    }
   }
 
   return offset;

@@ -18,7 +18,7 @@ org.riceapps.controllers.SchedulePlannerXhrController = function() {
   goog.base(this);
 
   /** @private {org.riceapps.models.UserModel} */
-  this.userModel_ = new org.riceapps.models.UserModel(1, 'lol');
+  this.userModel_ = new org.riceapps.models.UserModel(1, 'lol', 'xsrf');
 };
 goog.inherits(org.riceapps.controllers.SchedulePlannerXhrController,
               org.riceapps.controllers.Controller);
@@ -29,7 +29,9 @@ var SchedulePlannerXhrController = org.riceapps.controllers.SchedulePlannerXhrCo
  * @enum {string}
  */
 SchedulePlannerXhrController.EventType = {
-  USER_MODEL_READY: 'user_model_ready'
+  USER_MODEL_READY: 'user_model_ready',
+  SESSION_EXPIRED: 'session_expired',
+  XSRF_EXPIRED: 'xsrf_expired'
 };
 
 

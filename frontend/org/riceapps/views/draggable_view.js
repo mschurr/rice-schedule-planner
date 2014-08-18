@@ -545,7 +545,7 @@ DraggableView.prototype.stopDragging_ = function(opt_event) {
 
   var target = null;
   if (opt_event) {
-    target = this.maybeDrop_(event);
+    target = this.maybeDrop_(opt_event);
   }
 
   this.dispatchEvent(new goog.events.Event(DraggableView.EventType.DRAGEND));

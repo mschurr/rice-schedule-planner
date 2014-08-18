@@ -15,12 +15,13 @@ var UserModelEvent = org.riceapps.events.UserModelEvent;
 /**
  * @param {number} userId
  * @param {string} userName
+ * @param {string} xsrfToken
  * @param {Array.<!CourseModel>=} opt_schedule
  * @param {Array.<!CourseModel>=} opt_playground
  * @extends {org.riceapps.models.Model}
  * @constructor
  */
-org.riceapps.models.UserModel = function(userId, userName, opt_schedule, opt_playground) {
+org.riceapps.models.UserModel = function(userId, userName, xrfToken, opt_schedule, opt_playground) {
   goog.base(this);
 
   /** @private {!Array.<!CourseModel>} */
@@ -34,6 +35,9 @@ org.riceapps.models.UserModel = function(userId, userName, opt_schedule, opt_pla
 
   /** @private {string} */
   this.userName_ = userName;
+
+  /** @private {string} */
+  this.xsrfToken_ = xrfToken;
 
   if (opt_playground) {
     this.addCoursesToPlayground(opt_playground);
@@ -53,6 +57,14 @@ var UserModel = org.riceapps.models.UserModel;
  */
 UserModel.prototype.getUserId = function() {
   return this.userId_;
+};
+
+
+/**
+ * @return {string}
+ */
+UserModel.prototype.getXsrfToken = function() {
+  return this.xsrfToken_;
 };
 
 

@@ -42,7 +42,7 @@ CourseCalendarView.Theme = {
 /**
  * @const {goog.math.Rect}
  */
-CourseCalendarView.RENDER_ADJUST = new goog.math.Rect(0, 0, 28, 20);
+CourseCalendarView.RENDER_ADJUST = new goog.math.Rect(0, 0, 10, 10);
 
 
 /**
@@ -60,7 +60,10 @@ CourseCalendarView.prototype.createDom = function() {
 CourseCalendarView.prototype.getDragTooltip = function() {
   var element = goog.dom.createDom(goog.dom.TagName.DIV, CourseCalendarView.Theme.TOOLTIP);
   goog.dom.setTextContent(element, this.getCourseModel().getTitle());
-  return this.makeTooltipFromElement(element);
+  goog.dom.appendChild(document.body, element);
+  var tooltip = this.makeTooltipFromElement(element);
+  goog.dom.removeNode(element);
+  return tooltip;
 };
 
 

@@ -64,6 +64,17 @@ org.riceapps.utils.FakeData.getCourseModels = function(count) {
   };
   models.push(model);
 
+  var model = new org.riceapps.models.CourseModel();
+  model.getMeetingTimes = function() {
+    return [{
+        "day" : 0,
+        "start" : 8,
+        "end" : 11,
+        "location" : 'RZR 121'
+      }];
+  };
+  models.push(model);
+
 
   return models;
 };

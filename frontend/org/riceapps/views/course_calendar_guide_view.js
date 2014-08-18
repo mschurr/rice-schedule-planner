@@ -58,7 +58,7 @@ CourseCalendarGuideView.Theme = {
 /**
  * @const {goog.math.Rect}
  */
-CourseCalendarGuideView.RENDER_ADJUST = new goog.math.Rect(0, 0, 28, 20);
+CourseCalendarGuideView.RENDER_ADJUST = new goog.math.Rect(0, 0, 10, 10);
 
 
 /**

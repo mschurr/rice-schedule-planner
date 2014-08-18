@@ -106,8 +106,8 @@ html, body {
 
 .playground-view {
   background-color: #FFF;
-  width: 300px;
-  max-width: 200px;
+  width: 250px;
+  max-width: 250px;
   display: table-cell;
   vertical-align: top;
   transition: background-color 0.5s ease;
@@ -186,6 +186,21 @@ html, body {
   overflow: hidden;
 }
 
+.course-calendar-view,
+.course-calendar-guide-view {
+  padding: 5px 5px;
+  border-radius: 2px;
+  transition: width 0.3s ease-in-out;
+  -webkit-transition: width 0.3s ease-in-out;
+}
+
+.course-calendar-view div,
+.course-calendar-guide-view div {
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 .course-view,
 .course-calendar-view-tooltip {
   height: 22px;
@@ -193,16 +208,12 @@ html, body {
 }
 
 .course-calendar-view-tooltip {
-  width: 255px;
-}
-
-
-.course-calendar-view {
-  margin: 0px;
+  width: 215px;
 }
 
 .course-calendar-view-container,
 .course-calendar-guide-view-container {
+  font-size: 12px;
   position: absolute;
   top: 0px;
   left: 0px;
