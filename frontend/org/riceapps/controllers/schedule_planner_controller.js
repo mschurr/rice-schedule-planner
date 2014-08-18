@@ -13,7 +13,7 @@ goog.require('org.riceapps.views.CourseView');
 goog.require('org.riceapps.views.CourseCalendarView');
 goog.require('org.riceapps.views.CourseCalendarGuideView');
 goog.require('org.riceapps.views.DraggableView');
-goog.require('org.riceapps.views.ModalView');
+goog.require('org.riceapps.views.CourseModalView');
 goog.require('org.riceapps.views.SchedulePlannerView');
 
 
@@ -60,7 +60,7 @@ var SchedulePlannerController = org.riceapps.controllers.SchedulePlannerControll
 SchedulePlannerController.prototype.onCourseViewClick_ = function(event) {
   window.console.log('SchedulePlannerController.onCourseViewClick_');
   // TODO(mschurr@rice.edu): Create a CourseModalView and spawn it here with event.target.getCourseModel()
-  var modalView = new org.riceapps.views.ModalView();
+  var modalView = new org.riceapps.views.CourseModalView();
   modalView.disposeOnHide().show();
 };
 

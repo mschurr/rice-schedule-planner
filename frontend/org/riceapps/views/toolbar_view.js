@@ -8,6 +8,7 @@ goog.require('goog.events.Event');
 goog.require('goog.events.KeyEvent');
 goog.require('goog.events.EventType');
 goog.require('org.riceapps.views.CourseView');
+goog.require('org.riceapps.views.SearchView');
 goog.require('org.riceapps.views.TrashView');
 goog.require('org.riceapps.views.View');
 
@@ -16,14 +17,13 @@ goog.scope(function() {
 
 
 /**
- *
  * TODO: Show the number of credits in calendar (all, D1, D2, D3)
- * TODO: Swap between calendar view and list view.
  *
+ * @param {!org.riceapps.views.SearchView}
  * @extends {org.riceapps.views.View}
  * @constructor
  */
-org.riceapps.views.ToolbarView = function() {
+org.riceapps.views.ToolbarView = function(searchView) {
   goog.base(this);
 
   /** @private {!org.riceapps.views.TrashView} */
@@ -32,6 +32,9 @@ org.riceapps.views.ToolbarView = function() {
 
   /** @private {Element} */
   this.searchInput_ = null;
+
+  /** @private {Element} */
+  this.statsContainer_ = null;
 
   /** @private {Element} */
   this.allCredits_ = null;
@@ -44,6 +47,9 @@ org.riceapps.views.ToolbarView = function() {
 
   /** @private {Element} */
   this.distrbutionThreeCredits_ = null;
+
+  /** @private {!org.riceapps.views.SearchView} */
+  this.searchView_ = searchView;
 };
 goog.inherits(org.riceapps.views.ToolbarView,
               org.riceapps.views.View);
@@ -53,7 +59,9 @@ var ToolbarView = org.riceapps.views.ToolbarView;
 /** @enum {string} */
 ToolbarView.Theme = {
   BASE: 'tool-bar-view',
-  INPUT: 'tool-bar-view-input'
+  INPUT: 'tool-bar-view-input',
+  STATS: 'tool-bar-view-stats',
+  INPUT_ACTIVE: 'tool-bar-view-input-active'
 };
 
 
@@ -80,6 +88,22 @@ ToolbarView.prototype.createDom = function() {
   this.searchInput_ = goog.dom.createDom(goog.dom.TagName.INPUT, ToolbarView.Theme.INPUT);
   this.searchInput_.value = ToolbarView.DEFAULT_QUERY;
   goog.dom.appendChild(this.getElement(), this.searchInput_);
+
+  this.statsContainer_ = goog.dom.createDom(goog.dom.TagName.DIV, ToolbarView.Theme.STATS);
+  this.setCredits(0, 0, 0, 0);
+  goog.dom.appendChild(this.getElement(), this.statsContainer_);
+};
+
+
+/**
+ * @param {number} total
+ * @param {number} d1
+ * @param {number} d2
+ * @param {number} d3
+ */
+ToolbarView.prototype.setCredits = function(total, d1, d2, d3) {
+  // TODO(mschurr): Implement this and make the container look prettier.
+  //goog.dom.setTextContent(this.statsContainer_, 'Credits: 0 (0 D1, 0 D2, 0 D3)');
 };
 
 
@@ -124,6 +148,8 @@ ToolbarView.prototype.exitDocument = function() {
 ToolbarView.prototype.onSearchInputBlur_ = function(event) {
   if (this.searchInput_.value == '') {
     this.searchInput_.value = ToolbarView.DEFAULT_QUERY;
+    goog.dom.classlist.remove(this.searchInput_, ToolbarView.Theme.INPUT_ACTIVE);
+    this.searchView_.hide();
   }
 };
 
@@ -134,6 +160,8 @@ ToolbarView.prototype.onSearchInputBlur_ = function(event) {
 ToolbarView.prototype.onSearchInputFocus_ = function(event) {
   if (this.searchInput_.value == ToolbarView.DEFAULT_QUERY) {
     this.searchInput_.value = '';
+    goog.dom.classlist.add(this.searchInput_, ToolbarView.Theme.INPUT_ACTIVE);
+    this.searchView_.show();
   }
 };
 

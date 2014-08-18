@@ -8,11 +8,10 @@ goog.require('org.riceapps.views.CourseView');
 goog.require('org.riceapps.views.FooterView');
 goog.require('org.riceapps.views.ModalView');
 goog.require('org.riceapps.views.NavigationBarView');
+goog.require('org.riceapps.views.SearchView');
 goog.require('org.riceapps.views.PlaygroundView');
 goog.require('org.riceapps.views.ToolbarView');
 goog.require('org.riceapps.views.View');
-/*goog.require('org.riceapps.views.CourseInfoView');
-goog.require('org.riceapps.views.SearchView');*/
 
 goog.scope(function() {
 
@@ -29,10 +28,6 @@ org.riceapps.views.SchedulePlannerView = function() {
   this.navigationBarView_ = new org.riceapps.views.NavigationBarView();
   this.addChild(this.navigationBarView_);
 
-  /** @private {!org.riceapps.views.ToolbarView} */
-  this.toolbarView_ = new org.riceapps.views.ToolbarView();
-  this.addChild(this.toolbarView_);
-
   /** @private {!org.riceapps.views.PlaygroundView} */
   this.playgroundView_ = new org.riceapps.views.PlaygroundView();
   this.addChild(this.playgroundView_);
@@ -44,6 +39,14 @@ org.riceapps.views.SchedulePlannerView = function() {
   /** @private {!org.riceapps.views.FooterView} */
   this.footerView_ = new org.riceapps.views.FooterView();
   this.addChild(this.footerView_);
+
+  /** @private {!org.riceapps.views.SearchView} */
+  this.searchView_ = new org.riceapps.views.SearchView();
+  this.addChild(this.searchView_);
+
+  /** @private {!org.riceapps.views.ToolbarView} */
+  this.toolbarView_ = new org.riceapps.views.ToolbarView(this.searchView_);
+  this.addChild(this.toolbarView_);
 };
 goog.inherits(org.riceapps.views.SchedulePlannerView,
               org.riceapps.views.View);
@@ -63,6 +66,16 @@ SchedulePlannerView.Theme = {
 SchedulePlannerView.prototype.getCalendarView = function() {
   return this.calendarView_;
 };
+
+
+
+/**
+ * @return {!org.riceapps.views.ToolbarView}
+ */
+SchedulePlannerView.prototype.getToolbarView = function() {
+  return this.toolbarView_;
+};
+
 
 
 /**
@@ -95,6 +108,7 @@ SchedulePlannerView.prototype.createDom = function() {
   goog.dom.appendChild(this.getElement(), columns);
   this.playgroundView_.render(columns);
   this.calendarView_.render(columns);
+  this.searchView_.render(this.calendarView_.getElement());
 
   this.footerView_.render(this.getElement());
 };
