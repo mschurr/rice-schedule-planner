@@ -4,6 +4,7 @@ goog.require('goog.array');
 goog.require('org.riceapps.events.UserModelEvent');
 goog.require('org.riceapps.models.Model');
 goog.require('org.riceapps.models.CourseModel');
+goog.require('org.riceapps.utils.FakeData');
 
 goog.scope(function() {
 var CourseModel = org.riceapps.models.CourseModel;
@@ -23,10 +24,10 @@ org.riceapps.models.UserModel = function(userId, userName, opt_schedule, opt_pla
   goog.base(this);
 
   /** @private {!Array.<!CourseModel>} */
-  this.schedule_ = [new org.riceapps.models.CourseModel()];
+  this.schedule_ = [];
 
   /** @private {!Array.<!CourseModel>} */
-  this.playground_ = [new org.riceapps.models.CourseModel()];
+  this.playground_ = org.riceapps.utils.FakeData.getCourseModels(10);
 
   /** @private {number} */
   this.userId_ = userId;

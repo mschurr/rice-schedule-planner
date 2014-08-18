@@ -115,7 +115,7 @@ CourseModel.prototype.getCourseNumber = function() {
  * @return {string}
  */
 CourseModel.prototype.getTitle = function() {
-  return 'COLL 144: Web Application Development @' + goog.getUid(this);
+  return 'COLL 144: @' + goog.getUid(this);
 };
 
 

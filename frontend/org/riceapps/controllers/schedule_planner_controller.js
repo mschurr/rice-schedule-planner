@@ -88,7 +88,8 @@ SchedulePlannerController.prototype.onCourseViewDropped_ = function(event) {
      event.target instanceof org.riceapps.views.CourseCalendarView) {
     // Update the user model.
     this.userModel_.removeCoursesFromSchedule([event.target.getCourseModel()]);
-    this.userModel_.addCoursesToSchedule([event.dropTarget.getCourseModel()]);
+    this.userModel_.addCoursesToSchedule([event.dropTarget.getCourseModel()],
+        event.target.getParent().indexOfChild(event.target));
 
     // Dispose of the view.
     event.target.getParent().removeChild(event.target, true);
@@ -199,11 +200,12 @@ SchedulePlannerController.prototype.addCoursesToPlayground = function(courses) {
 
 /**
  * @param {!Array.<!org.riceapps.models.CourseModel>}
+ * @param {opt_number=} opt_index
  */
-SchedulePlannerController.prototype.addCoursesToSchedule = function(courses) {
+SchedulePlannerController.prototype.addCoursesToSchedule = function(courses, opt_index) {
   for (var i = 0; i < courses.length; i++) {
     var course = new org.riceapps.views.CourseCalendarView(courses[i]);
-    this.view_.getCalendarView().addChild(course, true);
+    this.view_.getCalendarView().addChildAt(course, opt_index || 0, true);
     course.addDropTarget(this.view_.getPlaygroundView());
     course.addDropTarget(this.view_.getTrashView());
   }

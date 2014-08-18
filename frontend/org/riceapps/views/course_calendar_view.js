@@ -88,6 +88,14 @@ CourseCalendarView.prototype.removeBoxes_ = function() {
 /**
  * @override
  */
+CourseCalendarView.prototype.getChildInsertionIndex = function() {
+  return this.getParent().indexOfChild(this) + 1;
+};
+
+
+/**
+ * @override
+ */
 CourseCalendarView.prototype.getCalendarTimes = function() {
   if (this.isBeingDragged()) {
     return [];

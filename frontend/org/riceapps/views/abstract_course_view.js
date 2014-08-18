@@ -79,10 +79,18 @@ AbstractCourseView.prototype.handleDragStart_ = function(event) {
   // change.
   this.removeGuideViews_();
   this.guideViews_ = [];
-  var guideView = new org.riceapps.views.CourseCalendarGuideView(this.courseModel_, this.getParent().indexOfChild(this) + 1);
+  var guideView = new org.riceapps.views.CourseCalendarGuideView(this.courseModel_, this.getChildInsertionIndex());
   this.addDropTarget(guideView);
   this.guideViews_.push(guideView);
   this.dispatchEvent(new goog.events.Event(SchedulePlannerEvent.Type.ADD_GUIDE_VIEWS));
+};
+
+
+/**
+ * @return {number}
+ */
+AbstractCourseView.prototype.getChildInsertionIndex = function() {
+  return 0;
 };
 
 

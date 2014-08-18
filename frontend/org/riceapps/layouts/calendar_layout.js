@@ -97,8 +97,6 @@ CalendarLayout.prototype.naiveRelayout_ = function() {
 /**
  * Calculates the position at which each item in the calendar should be rendered and informs the calendar items of their
  * positions.
- *
- * TODO(mschurr): This ended up being a rather tricky problem... come back to it later.
  */
 CalendarLayout.prototype.relayout = function() {
   window.console.log('CalendarLayout.relayout');
@@ -116,12 +114,10 @@ CalendarLayout.prototype.relayout = function() {
 
     for (var j = 0; j < times.length; j++) {
       var time = times[j];
-      var offset = this.placeItem_(matrix, time);
+      var offset = this.placeItem_(matrix, items, item, time);
       offsets[i].push(offset);
     }
   }
-
-  //window.console.log(matrix);
 
   // Inform the calendar items of their positions.
   for (var i = 0; i < items.length; i++) {
@@ -129,13 +125,13 @@ CalendarLayout.prototype.relayout = function() {
     var rects = [];
 
     for (var j = 0; j < times.length; j++) {
-      //window.console.log(offsets[i][j], matrix[times[j]['day']][Math.floor(times[j]['start'])]);
+      var place = this.getLimit_(matrix, item, times[j]['day'], times[j]['start'], times[j]['end'], offsets[i][j]);
       rects.push(this.calendar_.getCalendarItemRect(
         times[j]['day'],
         times[j]['start'],
         times[j]['end'],
-        offsets[i][j],
-        matrix[times[j]['day']][Math.floor(times[j]['start'])].length
+        place.offset,
+        place.limit
       ));
     }
 
@@ -145,11 +141,66 @@ CalendarLayout.prototype.relayout = function() {
 
 
 /**
- * @param {!Object.<number, !Object.<number, !Array.<boolean>>>} matrix
+ * @param {!Object.<number, !Object.<number, !Array.<org.riceapps.layouts.CalendarLayout.Item>>>} matrix
+ * @param {!org.riceapps.layouts.CalendarLayout.Item} item
+ * @param {number} day
+ * @param {number} start
+ * @param {number} end
+ * @return {{
+ *   offset: number,
+ *   limit: number
+ * }}
+ */
+CalendarLayout.prototype.getLimit_ = function(matrix, item, day, start, end, offset) {
+  window.console.log(matrix, 'day', day, 'start', start, 'end', end, 'offset', offset);
+  var maxChanges = 1;
+
+  for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
+    var changes = 0;
+    var last = undefined;
+    for (var i = 0; i < matrix[day][hour].length; i++) {
+      if (matrix[day][hour][i] !== last) {
+        changes++;
+      }
+      last = matrix[day][hour][i];
+    }
+
+    maxChanges = Math.max(changes, maxChanges);
+  }
+
+  window.console.log('offset', offset, 'limit', changes);
+
+  return {
+    offset: offset,
+    limit:  Math.max(maxChanges, offset + 1)
+  };
+}
+
+
+/**
+ * @param {!Object.<number, !Object.<number, !Array.<org.riceapps.layouts.CalendarLayout.Item>>>} matrix
+ */
+CalendarLayout.prototype.expandMatrix_ = function(matrix) {
+  for (var day = 0; day < 7; day ++) {
+    for (var hour = 0; hour < 24; hour++) {
+      if (matrix[day][hour].length == 0) {
+        matrix[day][hour].push(null);
+      } else {
+        matrix[day][hour].push(matrix[day][hour][matrix[day][hour].length - 1]);
+      }
+    }
+  }
+}
+
+
+/**
+ * @param {!Object.<number, !Object.<number, !Array.<org.riceapps.layouts.CalendarLayout.Item>>>} matrix
+ * @param {!Array.<!org.riceapps.layouts.CalendarLayout.Item>} items
+ * @param {!org.riceapps.layouts.CalendarLayout.Item} item
  * @param {!org.riceapps.models.CourseModel.MeetingTime} time
  * @return {number}
  */
-CalendarLayout.prototype.placeItem_ = function(matrix, time) {
+CalendarLayout.prototype.placeItem_ = function(matrix, items, item, time) {
   var day = time['day'];
   var start = time['start'];
   var end = time['end'];
@@ -166,14 +217,17 @@ CalendarLayout.prototype.placeItem_ = function(matrix, time) {
   }
 
   // Write the item into the marix.
+  /*var largestOffset = offset;
+  for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
+    largestOffset = Math.max(largestOffset, matrix[day][hour].length);
+  }*/
+
   for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
     // Ensure there is sufficient space.
     while (offset >= matrix[day][hour].length) {
-      matrix[day][hour].push(false);
+      this.expandMatrix_(matrix);
     }
-
-    // Write the placement.
-    matrix[day][hour][offset] = true;
+    matrix[day][hour][offset] = item;
   }
 
   return offset;
@@ -181,7 +235,7 @@ CalendarLayout.prototype.placeItem_ = function(matrix, time) {
 
 
 /**
- * @param {!Object.<number, !Object.<number, !Array.<boolean>>>} matrix
+ * @param {!Object.<number, !Object.<number, !Array.<org.riceapps.layouts.CalendarLayout.Item>>>} matrix
  * @param {number} day
  * @param {number} start
  * @param {number} end
@@ -190,7 +244,8 @@ CalendarLayout.prototype.placeItem_ = function(matrix, time) {
  */
 CalendarLayout.prototype.canPlaceAt_ = function(matrix, day, start, end, offset) {
   for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
-    if (offset < matrix[day][hour].length && matrix[day][hour][offset]) {
+    if (offset < matrix[day][hour].length && matrix[day][hour][offset] &&
+        matrix[day][hour][offset] !== matrix[day][hour][offset - 1]) {
       return false;
     }
   }
@@ -200,7 +255,7 @@ CalendarLayout.prototype.canPlaceAt_ = function(matrix, day, start, end, offset)
 
 
 /**
- * @return {!Object.<number, !Object.<number, !Array.<boolean>>>}
+ * @return {!Object.<number, !Object.<number, !Array.<org.riceapps.layouts.CalendarLayout.Item>>>}
  */
 CalendarLayout.prototype.createMatrix_ = function() {
   // Build a matrix of calendar positions.
