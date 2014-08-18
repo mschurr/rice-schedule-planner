@@ -78,6 +78,10 @@ org.riceapps.layouts.CalendarLayout = function(calendar) {
 var CalendarLayout = org.riceapps.layouts.CalendarLayout;
 
 
+/** @const {number} */
+CalendarLayout.PRECISION = 4;
+
+
 /**
  * A naive relayout operation which assumes there will never be any time conflicts between rendered courses.
  * @private
@@ -156,10 +160,12 @@ CalendarLayout.prototype.relayout = function() {
  * }}
  */
 CalendarLayout.prototype.getLimit_ = function(matrix, item, day, start, end, offset) {
-  window.console.log(matrix, 'day', day, 'start', start, 'end', end, 'offset', offset);
+  //window.console.log(matrix, 'day', day, 'start', start, 'end', end, 'offset', offset);
   var maxChanges = 1;
 
-  for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
+  for (var hour = Math.floor(start * CalendarLayout.PRECISION);
+       hour < Math.ceil(end * CalendarLayout.PRECISION);
+       hour += 1) {
     var changes = 0;
     var last = null;
     for (var i = 0; i < matrix[day][hour].length; i++) {
@@ -168,11 +174,11 @@ CalendarLayout.prototype.getLimit_ = function(matrix, item, day, start, end, off
       }
       last = matrix[day][hour][i];
     }
-    window.console.log('changes', changes);
+    //window.console.log('changes', changes);
     maxChanges = Math.max(changes, maxChanges);
   }
 
-  window.console.log('offset', offset, 'limit', changes);
+  //window.console.log('offset', offset, 'limit', changes);
 
   return {
     offset: offset,
@@ -186,7 +192,7 @@ CalendarLayout.prototype.getLimit_ = function(matrix, item, day, start, end, off
  */
 CalendarLayout.prototype.expandMatrix_ = function(matrix) {
   for (var day = 0; day < 7; day ++) {
-    for (var hour = 0; hour < 24; hour++) {
+    for (var hour = 0; hour < 24 * CalendarLayout.PRECISION; hour++) {
       if (matrix[day][hour].length == 0) {
         matrix[day][hour].push(null);
       } else {
@@ -220,7 +226,9 @@ CalendarLayout.prototype.placeItem_ = function(matrix, items, item, time) {
     offset++;
   }
 
-  for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
+  for (var hour = Math.floor(start * CalendarLayout.PRECISION);
+       hour < Math.ceil(end * CalendarLayout.PRECISION);
+       hour += 1) {
     // Ensure there is sufficient space.
     while (offset >= matrix[day][hour].length) {
       this.expandMatrix_(matrix);
@@ -247,7 +255,9 @@ CalendarLayout.prototype.placeItem_ = function(matrix, items, item, time) {
  * @return {boolean}
  */
 CalendarLayout.prototype.canPlaceAt_ = function(matrix, day, start, end, offset) {
-  for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
+  for (var hour = Math.floor(start * CalendarLayout.PRECISION);
+       hour < Math.ceil(end * CalendarLayout.PRECISION);
+       hour += 1) {
     if (offset < matrix[day][hour].length && matrix[day][hour][offset] &&
         matrix[day][hour][offset] !== matrix[day][hour][offset - 1]) {
       return false;
@@ -268,7 +278,7 @@ CalendarLayout.prototype.createMatrix_ = function() {
   for (var day = 0; day < 7; day ++) {
     matrix[day] = {};
 
-    for (var hour = 0; hour < 24; hour++) {
+    for (var hour = 0; hour < 24 * CalendarLayout.PRECISION; hour++) {
       matrix[day][hour] = [];
     }
   }

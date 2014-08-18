@@ -46,6 +46,9 @@ org.riceapps.controllers.SchedulePlannerController = function() {
 
   /** @private {!org.riceapps.models.UserModel} */
   this.userModel_ = null;
+
+  /** @private {number} */
+  this.calendarInsertAt_ = 0;
 };
 goog.inherits(org.riceapps.controllers.SchedulePlannerController,
               org.riceapps.controllers.Controller);
@@ -87,9 +90,9 @@ SchedulePlannerController.prototype.onCourseViewDropped_ = function(event) {
   if(event.dropTarget instanceof org.riceapps.views.CourseCalendarGuideView &&
      event.target instanceof org.riceapps.views.CourseCalendarView) {
     // Update the user model.
+    this.calendarInsertAt_ = event.target.getParent().indexOfChild(event.target);
     this.userModel_.removeCoursesFromSchedule([event.target.getCourseModel()]);
-    this.userModel_.addCoursesToSchedule([event.dropTarget.getCourseModel()],
-        event.target.getParent().indexOfChild(event.target));
+    this.userModel_.addCoursesToSchedule([event.dropTarget.getCourseModel()]);
 
     // Dispose of the view.
     event.target.getParent().removeChild(event.target, true);
@@ -203,12 +206,19 @@ SchedulePlannerController.prototype.addCoursesToPlayground = function(courses) {
  * @param {opt_number=} opt_index
  */
 SchedulePlannerController.prototype.addCoursesToSchedule = function(courses, opt_index) {
+  var index = opt_index || this.calendarInsertAt_ || 0;
+  var index = Math.max(index, 0);
+  var index = Math.min(index, this.view_.getCalendarView().getChildCount() + 1);
+  window.console.log('opt_index', index);
+
   for (var i = 0; i < courses.length; i++) {
     var course = new org.riceapps.views.CourseCalendarView(courses[i]);
-    this.view_.getCalendarView().addChildAt(course, opt_index || 0, true);
+    this.view_.getCalendarView().addChildAt(course, index, true);
     course.addDropTarget(this.view_.getPlaygroundView());
     course.addDropTarget(this.view_.getTrashView());
   }
+
+  this.calendarInsertAt_ = 0;
 };
 
 

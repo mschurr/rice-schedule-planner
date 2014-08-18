@@ -5,6 +5,7 @@ goog.require('goog.dom.TagName');
 goog.require('goog.dom.classlist');
 goog.require('goog.events.BrowserEvent');
 goog.require('goog.events.Event');
+goog.require('goog.events.KeyCodes');
 goog.require('goog.events.KeyEvent');
 goog.require('goog.events.EventType');
 goog.require('org.riceapps.views.CourseView');
@@ -143,9 +144,9 @@ ToolbarView.prototype.exitDocument = function() {
 
 
 /**
- * @param {goog.events.BrowserEvent} event
+ * @param {?goog.events.BrowserEvent=} opt_event
  */
-ToolbarView.prototype.onSearchInputBlur_ = function(event) {
+ToolbarView.prototype.onSearchInputBlur_ = function(opt_event) {
   if (this.searchInput_.value == '') {
     this.searchInput_.value = ToolbarView.DEFAULT_QUERY;
     goog.dom.classlist.remove(this.searchInput_, ToolbarView.Theme.INPUT_ACTIVE);
@@ -155,9 +156,9 @@ ToolbarView.prototype.onSearchInputBlur_ = function(event) {
 
 
 /**
- * @param {goog.events.BrowserEvent} event
+ * @param {?goog.events.BrowserEvent=} opt_event
  */
-ToolbarView.prototype.onSearchInputFocus_ = function(event) {
+ToolbarView.prototype.onSearchInputFocus_ = function(opt_event) {
   if (this.searchInput_.value == ToolbarView.DEFAULT_QUERY) {
     this.searchInput_.value = '';
     goog.dom.classlist.add(this.searchInput_, ToolbarView.Theme.INPUT_ACTIVE);
@@ -170,7 +171,9 @@ ToolbarView.prototype.onSearchInputFocus_ = function(event) {
  * @param {goog.events.KeyEvent} event
  */
 ToolbarView.prototype.onSearchInputKeyUp_ = function(event) {
-
+  if (event.keyCode == goog.events.KeyCodes.ESC) {
+    this.searchInput_.blur();
+  }
 };
 
 

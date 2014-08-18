@@ -129,6 +129,12 @@ ModalView.prototype.show = function(opt_preventAnimation) {
   goog.style.setElementShown(this.getElement(), true);
   goog.style.setElementShown(this.transparentOverlay_, true);
 
+
+  goog.dom.classlist.removeAll(this.getElement(),
+      [Animation.BASE_CLASS, Animation.Preset.ZOOM_IN, Animation.Preset.ZOOM_OUT]);
+  goog.dom.classlist.removeAll(this.transparentOverlay_,
+      [Animation.BASE_CLASS, Animation.Preset.FADE_IN, Animation.Preset.FADE_OUT]);
+
   if (!opt_preventAnimation) {
     goog.style.setElementShown(this.getElement(), true);
     goog.style.setElementShown(this.transparentOverlay_, true);
@@ -147,6 +153,11 @@ ModalView.prototype.hide = function(opt_preventAnimation) {
   }
 
   goog.base(this, 'hide', opt_preventAnimation);
+
+  goog.dom.classlist.removeAll(this.getElement(),
+      [Animation.BASE_CLASS, Animation.Preset.ZOOM_IN, Animation.Preset.ZOOM_OUT]);
+  goog.dom.classlist.removeAll(this.transparentOverlay_,
+      [Animation.BASE_CLASS, Animation.Preset.FADE_IN, Animation.Preset.FADE_OUT]);
 
   if (opt_preventAnimation) {
     goog.style.setElementShown(this.getElement(), false);

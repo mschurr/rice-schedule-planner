@@ -1,5 +1,6 @@
 goog.provide('org.riceapps.views.SearchView');
 
+goog.require('goog.Timer');
 goog.require('goog.dom.classlist');
 goog.require('goog.style');
 goog.require('org.riceapps.fx.Animation');
@@ -16,6 +17,9 @@ var Animation = org.riceapps.fx.Animation;
  */
 org.riceapps.views.SearchView = function() {
   goog.base(this);
+
+  /** @private {number} */
+  this.hideTimer_ = -1;
 };
 goog.inherits(org.riceapps.views.SearchView,
               org.riceapps.views.View);
@@ -55,6 +59,12 @@ SearchView.prototype.show = function(opt_preventAnimation) {
   if (this.isShown()) {
     return;
   }
+
+  if (this.hideTimer_ != -1) {
+    goog.Timer.clear(this.hideTimer_);
+    this.hideTimer_ = -1;
+  }
+
   goog.base(this, 'show', opt_preventAnimation);
   goog.style.setElementShown(this.getElement(), true);
 
@@ -82,6 +92,10 @@ SearchView.prototype.hide = function(opt_preventAnimation) {
 
   if(!opt_preventAnimation) {
     goog.dom.classlist.addAll(this.getElement(), [Animation.BASE_CLASS, Animation.Preset.FADE_OUT_RIGHT_BIG]);
+    this.hideTimer_ = goog.Timer.callOnce(function() {
+      goog.style.setElementShown(this.getElement(), false);
+      this.hideTimer_ = -1;
+    }, 300, this);
   } else {
     goog.style.setElementShown(this.getElement(), false);
   }
