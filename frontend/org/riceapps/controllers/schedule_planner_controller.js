@@ -73,7 +73,7 @@ SchedulePlannerController.prototype.handleAddGuideViews_ = function(event) {
   var views = event.target.getGuideViews();
 
   for(var i = 0; i < views.length; i++) {
-    this.view_.getCalendarView().addChild(views[i], true);
+    this.view_.getCalendarView().addChildAt(views[i], views[i].getChildIndex(), true);
   }
 };
 
@@ -146,6 +146,8 @@ SchedulePlannerController.prototype.onCourseViewDropped_ = function(event) {
     event.target.getParent().removeChild(event.target, true);
     event.target.dispose();
   }
+
+  this.view_.getCalendarView().relayout();
 };
 
 
@@ -209,6 +211,14 @@ SchedulePlannerController.prototype.addCoursesToSchedule = function(courses) {
 
 
 /**
+ * @param {goog.events.Event} event
+ */
+SchedulePlannerController.prototype.handleDragEnd_ = function(event) {
+  this.view_.getCalendarView().relayout();
+};
+
+
+/**
  * Informs the controller to start rendering and listening for events.
  */
 SchedulePlannerController.prototype.start = function() {
@@ -217,6 +227,7 @@ SchedulePlannerController.prototype.start = function() {
   this.getHandler().
     listen(this.view_, DraggableView.EventType.CLICK, this.onCourseViewClick_).
     listen(this.view_, DraggableView.EventType.DROPPED, this.onCourseViewDropped_).
+    listen(this.view_, DraggableView.EventType.DRAGEND, this.handleDragEnd_).
     listen(this.view_, SchedulePlannerEvent.Type.ADD_GUIDE_VIEWS, this.handleAddGuideViews_).
     listenOnce(this.xhrController_, SchedulePlannerXhrController.EventType.USER_MODEL_READY, this.onUserModelReady_);
 

@@ -49,9 +49,6 @@ CalendarView.DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
  */
 CalendarView.prototype.enterDocument = function() {
   goog.base(this, 'enterDocument');
-
-  this.getHandler().
-    listen(this, DraggableView.EventType.DRAGEND, this.handleDragEnd_);
 };
 
 
@@ -60,17 +57,6 @@ CalendarView.prototype.enterDocument = function() {
  */
 CalendarView.prototype.exitDocument = function() {
   goog.base(this, 'exitDocument');
-
-  this.getHandler().
-    unlisten(this, DraggableView.EventType.DRAGEND, this.handleDragEnd_);
-};
-
-
-/**
- * @param {goog.events.Event} event
- */
-CalendarView.prototype.handleDragEnd_ = function(event) {
-  this.calendarLayout_.relayout();
 };
 
 
@@ -192,7 +178,13 @@ CalendarView.prototype.getCalendarItems = function() {
   var items = [];
 
   for (var i = 0; i < this.getChildCount(); i++) {
-    items.push(/** @type {!org.riceapps.layouts.CalendarLayout.Item} */ (this.getChildAt(i)));
+    var child = /** @type {!org.riceapps.layouts.CalendarLayout.Item} */ (this.getChildAt(i));
+
+    if (child instanceof DraggableView && child.isBeingDragged()) {
+      continue;
+    }
+
+    items.push(child);
   }
 
   return items;

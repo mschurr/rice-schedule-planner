@@ -74,9 +74,12 @@ AbstractCourseView.prototype.handleDragStart_ = function(event) {
 
   // Spawn and place the drop guide views.
   // TODO(mschurr@rice.edu): The guide views should show for other sections, too.
+
+  // NOTE: Add the guide views to the child index directly after the course view so that position on calendar will not
+  // change.
   this.removeGuideViews_();
   this.guideViews_ = [];
-  var guideView = new org.riceapps.views.CourseCalendarGuideView(this.courseModel_);
+  var guideView = new org.riceapps.views.CourseCalendarGuideView(this.courseModel_, this.getParent().indexOfChild(this) + 1);
   this.addDropTarget(guideView);
   this.guideViews_.push(guideView);
   this.dispatchEvent(new goog.events.Event(SchedulePlannerEvent.Type.ADD_GUIDE_VIEWS));

@@ -19,7 +19,7 @@ Installation:
 * Install back-end dependencies (`cd backend && composer install`).
 * Install the database file located in `database/schema.sql` and `backend/vendor/mschurr/framework/src/schema.sql`.
 * Rename `config-template.php` to `config.php` and configure your options.
-* Run `php server.php build prod` (for deployment) or `php server.php build --dev` (for development).
+* Run `php server.php build prod` (for deployment) or `php server.php build dev` (for development).
 * Pull new courses from the Rice University database by running `php server.php courses pull`. In production, you will want to set a cron job to run this command periodically.
 
 Development Server:

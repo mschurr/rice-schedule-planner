@@ -25,12 +25,13 @@ var SchedulePlannerEvent = org.riceapps.events.SchedulePlannerEvent;
 
 /**
  * @param {!org.riceapps.models.CourseModel} courseModel
+ * @param {number} childIndex
  * @implements {org.riceapps.layouts.CalendarLayout.Item}
  * @implements {org.riceapps.views.DraggableView.DropTarget}
  * @extends {org.riceapps.views.View}
  * @constructor
  */
-org.riceapps.views.CourseCalendarGuideView = function(courseModel) {
+org.riceapps.views.CourseCalendarGuideView = function(courseModel, childIndex) {
   goog.base(this);
 
   /** @private {!org.riceapps.models.CourseModel} */
@@ -38,6 +39,9 @@ org.riceapps.views.CourseCalendarGuideView = function(courseModel) {
 
   /** @private {!Array.<!Element>} */
   this.boxes_ = [];
+
+  /** @private {number} */
+  this.childIndex_ = childIndex;
 };
 goog.inherits(org.riceapps.views.CourseCalendarGuideView,
               org.riceapps.views.View);
@@ -55,6 +59,14 @@ CourseCalendarGuideView.Theme = {
  * @const {goog.math.Rect}
  */
 CourseCalendarGuideView.RENDER_ADJUST = new goog.math.Rect(0, 0, 28, 20);
+
+
+/**
+ * @return {number}
+ */
+CourseCalendarGuideView.prototype.getChildIndex = function() {
+  return this.childIndex_;
+};
 
 
 /**

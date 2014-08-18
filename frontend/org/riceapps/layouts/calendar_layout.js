@@ -101,9 +101,108 @@ CalendarLayout.prototype.naiveRelayout_ = function() {
  * TODO(mschurr): This ended up being a rather tricky problem... come back to it later.
  */
 CalendarLayout.prototype.relayout = function() {
-  this.naiveRelayout_();
-  return;
+  window.console.log('CalendarLayout.relayout');
+  var matrix = this.createMatrix_();
+  var offsets = {};
 
+  // Ask the calendar for all of the items.
+  var items = this.calendar_.getCalendarItems();
+
+  // Calculate the layout of the calendar.
+  for (var i = 0; i < items.length; i++) {
+    offsets[i] = [];
+    var item = items[i];
+    var times = item.getCalendarTimes();
+
+    for (var j = 0; j < times.length; j++) {
+      var time = times[j];
+      var offset = this.placeItem_(matrix, time);
+      offsets[i].push(offset);
+    }
+  }
+
+  //window.console.log(matrix);
+
+  // Inform the calendar items of their positions.
+  for (var i = 0; i < items.length; i++) {
+    var times = items[i].getCalendarTimes();
+    var rects = [];
+
+    for (var j = 0; j < times.length; j++) {
+      //window.console.log(offsets[i][j], matrix[times[j]['day']][Math.floor(times[j]['start'])]);
+      rects.push(this.calendar_.getCalendarItemRect(
+        times[j]['day'],
+        times[j]['start'],
+        times[j]['end'],
+        offsets[i][j],
+        matrix[times[j]['day']][Math.floor(times[j]['start'])].length
+      ));
+    }
+
+    items[i].drawInRects(rects);
+  }
+};
+
+
+/**
+ * @param {!Object.<number, !Object.<number, !Array.<boolean>>>} matrix
+ * @param {!org.riceapps.models.CourseModel.MeetingTime} time
+ * @return {number}
+ */
+CalendarLayout.prototype.placeItem_ = function(matrix, time) {
+  var day = time['day'];
+  var start = time['start'];
+  var end = time['end'];
+  var offset = 0;
+
+  while (true) {
+    var placed = this.canPlaceAt_(matrix, day, start, end, offset);
+
+    if (placed) {
+      break;
+    }
+
+    offset++;
+  }
+
+  // Write the item into the marix.
+  for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
+    // Ensure there is sufficient space.
+    while (offset >= matrix[day][hour].length) {
+      matrix[day][hour].push(false);
+    }
+
+    // Write the placement.
+    matrix[day][hour][offset] = true;
+  }
+
+  return offset;
+};
+
+
+/**
+ * @param {!Object.<number, !Object.<number, !Array.<boolean>>>} matrix
+ * @param {number} day
+ * @param {number} start
+ * @param {number} end
+ * @param {number} offset
+ * @return {boolean}
+ */
+CalendarLayout.prototype.canPlaceAt_ = function(matrix, day, start, end, offset) {
+  for (var hour = Math.floor(start); hour < Math.ceil(end); hour += 1) {
+    if (offset < matrix[day][hour].length && matrix[day][hour][offset]) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+
+/**
+ * @return {!Object.<number, !Object.<number, !Array.<boolean>>>}
+ */
+CalendarLayout.prototype.createMatrix_ = function() {
   // Build a matrix of calendar positions.
   var matrix = {};
 
@@ -115,30 +214,8 @@ CalendarLayout.prototype.relayout = function() {
     }
   }
 
-  // Ask the calendar for all of the items.
-  var items = this.calendar_.getCalendarItems();
-
-  // Ask each item for the times in which it wishes to be rendered and add the data to the matrix.
-  for (var i = 0; i < items.length; i++) {
-    var times = items[i].getCalendarTimes();
-
-    for (var j = 0; j < times.length; j++) {
-      var start = times[j]['start'];
-      var end = times[j]['end'];
-      var day = times[j]['day'];
-
-      for (var k = Math.floor(start); k < Math.ceil(end); k++) {
-        matrix[day][k] = items[i];
-      }
-    }
-  }
-
-  // Calculate the final positions of each item in the calendar.
-
-  // Inform each calendar item of the positions it should render in.
-  for (var i = 0; i < items.length; i++) {
-    //items[i].drawInRects(rects);
-  }
+  return matrix;
 };
+
 
 });
