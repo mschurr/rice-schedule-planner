@@ -35,5 +35,4 @@ CourseView.prototype.createDom = function() {
   goog.dom.setTextContent(this.getElement(), this.getCourseModel().getTitle());
 };
 
-
 }); // goog.scope

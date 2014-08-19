@@ -1,5 +1,6 @@
 goog.provide('org.riceapps.controllers.SchedulePlannerController');
 
+goog.require('goog.Promise');
 goog.require('goog.events.BrowserEvent');
 goog.require('goog.events.Event');
 goog.require('org.riceapps.controllers.Controller');
@@ -8,7 +9,6 @@ goog.require('org.riceapps.events.SchedulePlannerEvent');
 goog.require('org.riceapps.events.UserModelEvent');
 goog.require('org.riceapps.models.UserModel');
 goog.require('org.riceapps.models.CourseModel');
-goog.require('org.riceapps.models.CoursesModel');
 goog.require('org.riceapps.views.CourseView');
 goog.require('org.riceapps.views.CourseCalendarView');
 goog.require('org.riceapps.views.CourseCalendarGuideView');
@@ -38,9 +38,6 @@ org.riceapps.controllers.SchedulePlannerController = function() {
   /** @private {!org.riceapps.views.SchedulePlannerView} */
   this.view_ = new org.riceapps.views.SchedulePlannerView();
 
-  /** @private {!org.riceapps.models.CoursesModel} */
-  this.coursesModel_ = new org.riceapps.models.CoursesModel();
-
   /** @private {!org.riceapps.controllers.SchedulePlannerXhrController} */
   this.xhrController_ = new org.riceapps.controllers.SchedulePlannerXhrController();
 
@@ -61,9 +58,7 @@ var SchedulePlannerController = org.riceapps.controllers.SchedulePlannerControll
  * @private
  */
 SchedulePlannerController.prototype.onCourseViewClick_ = function(event) {
-  window.console.log('SchedulePlannerController.onCourseViewClick_');
-  // TODO(mschurr@rice.edu): Create a CourseModalView and spawn it here with event.target.getCourseModel()
-  var modalView = new org.riceapps.views.CourseModalView();
+  var modalView = new org.riceapps.views.CourseModalView(event.target.getCourseModel());
   modalView.disposeOnHide().show();
 };
 
@@ -74,7 +69,6 @@ SchedulePlannerController.prototype.onCourseViewClick_ = function(event) {
  */
 SchedulePlannerController.prototype.handleAddGuideViews_ = function(event) {
   var views = event.target.getGuideViews();
-
   for(var i = 0; i < views.length; i++) {
     this.view_.getCalendarView().addChildAt(views[i], views[i].getChildIndex(), true);
   }
@@ -174,17 +168,29 @@ SchedulePlannerController.prototype.handleScheduleCoursesAdded_ = function(event
 
 
 /**
- * @param {goog.events.Event} event
+ * @param {!org.riceapps.models.UserModel}
  * @private
  */
-SchedulePlannerController.prototype.onUserModelReady_ = function(event) {
-  this.userModel_ = this.xhrController_.getUserModel();
+SchedulePlannerController.prototype.onUserModelReady_ = function(userModel) {
+  this.userModel_ = userModel;
   this.addCoursesToPlayground(this.userModel_.getCoursesInPlayground());
   this.addCoursesToSchedule(this.userModel_.getCoursesInSchedule());
 
+  // TODO(mschurr@rice.edu): May also wish to listen for remove events to keep model and UI synchronized... however,
+  // since delete should only be triggered by the UI, no need to do this for now.
   this.getHandler().
     listen(this.userModel_, UserModelEvent.Type.PLAYGROUND_COURSES_ADDED, this.handlePlaygroundCoursesAdded_).
     listen(this.userModel_, UserModelEvent.Type.SCHEDULE_COURSES_ADDED, this.handleScheduleCoursesAdded_);
+};
+
+
+/**
+ * @param {SchedulePlannerXhrController.ErrorType} errorType
+ * @private
+ */
+SchedulePlannerController.prototype.onXhrError_ = function(errorType) {
+  // TODO(mschurr@rice.edu): Error handling.
+  window.console.log('[ERROR] [CRITICAL] Failed to fetch user model.');
 };
 
 
@@ -209,7 +215,6 @@ SchedulePlannerController.prototype.addCoursesToSchedule = function(courses, opt
   var index = opt_index || this.calendarInsertAt_ || 0;
   var index = Math.max(index, 0);
   var index = Math.min(index, this.view_.getCalendarView().getChildCount() + 1);
-  window.console.log('opt_index', index);
 
   for (var i = 0; i < courses.length; i++) {
     var course = new org.riceapps.views.CourseCalendarView(courses[i]);
@@ -226,6 +231,7 @@ SchedulePlannerController.prototype.addCoursesToSchedule = function(courses, opt
  * @param {goog.events.Event} event
  */
 SchedulePlannerController.prototype.handleDragEnd_ = function(event) {
+  // Force the calendar view to re-draw items located on the calendar since the guide views will have disappeared.
   this.view_.getCalendarView().relayout();
 };
 
@@ -240,10 +246,9 @@ SchedulePlannerController.prototype.start = function() {
     listen(this.view_, DraggableView.EventType.CLICK, this.onCourseViewClick_).
     listen(this.view_, DraggableView.EventType.DROPPED, this.onCourseViewDropped_).
     listen(this.view_, DraggableView.EventType.DRAGEND, this.handleDragEnd_).
-    listen(this.view_, SchedulePlannerEvent.Type.ADD_GUIDE_VIEWS, this.handleAddGuideViews_).
-    listenOnce(this.xhrController_, SchedulePlannerXhrController.EventType.USER_MODEL_READY, this.onUserModelReady_);
+    listen(this.view_, SchedulePlannerEvent.Type.ADD_GUIDE_VIEWS, this.handleAddGuideViews_);
 
-  this.xhrController_.startLoadingUserModel();
+  this.xhrController_.getUserModel().then(this.onUserModelReady_, this.onXhrError_, this);
 };
 
 });  // goog.scope

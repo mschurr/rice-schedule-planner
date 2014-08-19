@@ -255,6 +255,7 @@ DraggableView.prototype.handleMouseClick_ = function(event) {
   } else if (this.dragStartCoordinate_) {
     this.debugLog_('self.dispatch.click');
     this.stopDragging_(event);
+    event.target = this;
     event.type = DraggableView.EventType.CLICK;
     this.dispatchEvent(event);
   }

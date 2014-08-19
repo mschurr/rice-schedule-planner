@@ -33,9 +33,9 @@ FooterView.Theme = {
 /** @const {!Object.<string, string>} */
 FooterView.LINKS = {
   'Source Code': 'https://github.com/mschurr/rice-schedule-planner',
-  'Rice Apps': 'http://www.riceapps.org',
   'Feedback' : 'mailto:mschurr@rice.edu',
-  'Feature Requests' : 'mailto:mschurr@rice.edu',
+  'Bugs' : 'mailto:mschurr@rice.edu',
+  'Feature Requests' : 'mailto:mschurr@rice.edu'
 };
 
 

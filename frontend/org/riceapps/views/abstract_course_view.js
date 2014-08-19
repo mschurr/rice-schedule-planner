@@ -73,7 +73,13 @@ AbstractCourseView.prototype.handleDragStart_ = function(event) {
   window.console.log('AbstractCourseView dragStart');
 
   // Set the drag source to be invisible.
-  goog.style.setElementShown(this.getElement(), false);
+  if (this.shouldHideElementOnDrag()) {
+    goog.style.setElementShown(this.getElement(), false);
+  } else {
+    goog.style.setStyle(this.getElement(), {
+      'opacity': '0.3'
+    });
+  }
 
   // Spawn and place the drop guide views.
   // TODO(mschurr@rice.edu): The guide views should show for other sections, too.
@@ -100,6 +106,15 @@ AbstractCourseView.prototype.getChildInsertionIndex = function() {
 
 
 /**
+ * @return {boolean}
+ */
+AbstractCourseView.prototype.shouldHideElementOnDrag = function() {
+  return false;
+};
+
+
+
+/**
  * @param {goog.events.Event} event
  * @private
  */
@@ -107,7 +122,13 @@ AbstractCourseView.prototype.handleDragEnd_ = function(event) {
   window.console.log('AbstractCourseView dragEnd');
 
   // Set the drag source to be visible again.
-  goog.style.setElementShown(this.getElement(), true);
+  if (this.shouldHideElementOnDrag()) {
+    goog.style.setElementShown(this.getElement(), true);
+  } else {
+    goog.style.setStyle(this.getElement(), {
+      'opacity': '1'
+    });
+  }
 
   // Remove any placed guide views.
   this.removeGuideViews_();

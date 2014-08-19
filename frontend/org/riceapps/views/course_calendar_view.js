@@ -70,6 +70,14 @@ CourseCalendarView.prototype.getDragTooltip = function() {
 /**
  * @override
  */
+CourseCalendarView.prototype.shouldHideElementOnDrag = function() {
+  return true;
+};
+
+
+/**
+ * @override
+ */
 CourseCalendarView.prototype.exitDocument = function() {
   goog.base(this, 'exitDocument');
   this.removeBoxes_();

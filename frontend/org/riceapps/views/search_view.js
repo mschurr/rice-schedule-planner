@@ -1,6 +1,7 @@
 goog.provide('org.riceapps.views.SearchView');
 
 goog.require('goog.Timer');
+goog.require('goog.dom.TagName');
 goog.require('goog.dom.classlist');
 goog.require('goog.style');
 goog.require('org.riceapps.fx.Animation');
@@ -30,7 +31,10 @@ var SearchView = org.riceapps.views.SearchView;
  * @enum {string}
  */
 SearchView.Theme = {
-  BASE: 'search-view'
+  BASE: 'search-view',
+  COLUMNS: 'search-view-columns',
+  RESULTS: 'search-view-results',
+  FILTERS: 'search-view-filters'
 };
 
 
@@ -40,6 +44,15 @@ SearchView.Theme = {
 SearchView.prototype.createDom = function() {
   goog.base(this, 'createDom');
   goog.dom.classlist.add(this.getElement(), SearchView.Theme.BASE);
+
+  var columns = goog.dom.createDom(goog.dom.TagName.DIV, SearchView.Theme.COLUMNS);
+  goog.dom.appendChild(this.getElement(), columns);
+
+  var results = goog.dom.createDom(goog.dom.TagName.DIV, SearchView.Theme.RESULTS);
+  goog.dom.appendChild(columns, results);
+
+  var filters = goog.dom.createDom(goog.dom.TagName.DIV, SearchView.Theme.FILTERS);
+  goog.dom.appendChild(columns, filters);
 };
 
 

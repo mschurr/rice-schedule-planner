@@ -11,6 +11,7 @@ goog.require('org.riceapps.views.NavigationBarView');
 goog.require('org.riceapps.views.SearchView');
 goog.require('org.riceapps.views.PlaygroundView');
 goog.require('org.riceapps.views.ToolbarView');
+goog.require('org.riceapps.views.TourView');
 goog.require('org.riceapps.views.View');
 
 goog.scope(function() {
@@ -47,6 +48,10 @@ org.riceapps.views.SchedulePlannerView = function() {
   /** @private {!org.riceapps.views.ToolbarView} */
   this.toolbarView_ = new org.riceapps.views.ToolbarView(this.searchView_);
   this.addChild(this.toolbarView_);
+
+  /** @private {!org.riceapps.views.SearchView} */
+  this.tourView_ = new org.riceapps.views.TourView(this);
+  this.addChild(this.tourView_);
 };
 goog.inherits(org.riceapps.views.SchedulePlannerView,
               org.riceapps.views.View);
@@ -75,6 +80,15 @@ SchedulePlannerView.prototype.getCalendarView = function() {
 SchedulePlannerView.prototype.getToolbarView = function() {
   return this.toolbarView_;
 };
+
+
+/**
+ * @return {!org.riceapps.views.SearchView}
+ */
+SchedulePlannerView.prototype.getSearchView = function() {
+  return this.searchView_;
+};
+
 
 
 
@@ -109,8 +123,8 @@ SchedulePlannerView.prototype.createDom = function() {
   this.playgroundView_.render(columns);
   this.calendarView_.render(columns);
   this.searchView_.render(this.calendarView_.getElement());
-
   this.footerView_.render(this.getElement());
+  this.tourView_.render(this.getElement());
 };
 
 
