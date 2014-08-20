@@ -61,7 +61,8 @@ var SchedulePlannerView = org.riceapps.views.SchedulePlannerView;
 /** @enum {string} */
 SchedulePlannerView.Theme = {
   BASE: 'schedule-planner-view',
-  COLUMNS: 'columns'
+  COLUMNS: 'schedule-planner-view-columns',
+  COLUMN: 'schedule-planner-view-column',
 };
 
 
@@ -120,7 +121,10 @@ SchedulePlannerView.prototype.createDom = function() {
 
   var columns = goog.dom.createDom(goog.dom.TagName.DIV, SchedulePlannerView.Theme.COLUMNS);
   goog.dom.appendChild(this.getElement(), columns);
-  this.playgroundView_.render(columns);
+
+  var container = goog.dom.createDom(goog.dom.TagName.DIV, SchedulePlannerView.Theme.COLUMN);
+  goog.dom.appendChild(columns, container);
+  this.playgroundView_.render(container);
   this.calendarView_.render(columns);
   this.searchView_.render(this.calendarView_.getElement());
   this.footerView_.render(this.getElement());

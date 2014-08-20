@@ -48,6 +48,7 @@ SchedulePlannerXhrController.Path = {
 
 
 /**
+ * Retrieves the user model from the server.
  * @return {!goog.Promise.<!org.riceapps.models.UserModel>}
  */
 SchedulePlannerXhrController.prototype.getUserModel = function() {
@@ -68,6 +69,16 @@ SchedulePlannerXhrController.prototype.getUserModel = function() {
 
 
 /**
+ * Pushes the user model to the remote server, synchronizing any properties changed client-side to the server.
+ * @return {!goog.Promise<boolean>}
+ */
+SchedulePlannerXhrController.prototype.pushUserModel = function() {
+  return goog.Promise.resolve(true);
+};
+
+
+/**
+ * Retrieves a course model from the server.
  * @return {!goog.Promise.<!org.riceapps.models.CourseModel>}
  */
 SchedulePlannerXhrController.prototype.getCourseModel = function(courseId) {
@@ -138,12 +149,12 @@ SchedulePlannerXhrController.prototype.getCourseById = function(courseId) {
 
 
 /**
- * Returns all sessions of courses within the given course category.
- * @param {string} category
+ * Returns all sessions of the provided course model (including the provided model).
+ * @param {!CourseModel}
  * @return {!goog.Promise.<!Array.<!CourseModel>>}
  */
-SchedulePlannerXhrController.prototype.getCoursesInCategory = function(category, offset, limit) {
-  return goog.Promise.resolve([]);
+SchedulePlannerXhrController.prototype.getAllCourseSessions = function(courseModel) {
+  return goog.Promise.resolve([courseModel]);
 };
 
 

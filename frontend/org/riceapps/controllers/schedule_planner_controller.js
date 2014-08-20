@@ -12,6 +12,7 @@ goog.require('org.riceapps.models.CourseModel');
 goog.require('org.riceapps.views.CourseView');
 goog.require('org.riceapps.views.CourseCalendarView');
 goog.require('org.riceapps.views.CourseCalendarGuideView');
+goog.require('org.riceapps.views.CourseSearchView');
 goog.require('org.riceapps.views.DraggableView');
 goog.require('org.riceapps.views.CourseModalView');
 goog.require('org.riceapps.views.SchedulePlannerView');
@@ -117,6 +118,17 @@ SchedulePlannerController.prototype.onCourseViewDropped_ = function(event) {
     event.target.dispose();
   }
 
+  // Move an item from the search results to the playground.
+  else if(event.dropTarget === this.view_.getPlaygroundView() &&
+          event.target instanceof org.riceapps.views.CourseSearchView) {
+    // Update the user model.
+    this.userModel_.addCoursesToPlayground([event.target.getCourseModel()]);
+
+    // Dispose of the view.
+    event.target.getParent().removeChild(event.target, true);
+    event.target.dispose();
+  }
+
   // Move an item from the playground to the playground.
   else if(event.dropTarget === this.view_.getPlaygroundView() &&
           event.target instanceof org.riceapps.views.CourseView) {
@@ -180,7 +192,41 @@ SchedulePlannerController.prototype.onUserModelReady_ = function(userModel) {
   // since delete should only be triggered by the UI, no need to do this for now.
   this.getHandler().
     listen(this.userModel_, UserModelEvent.Type.PLAYGROUND_COURSES_ADDED, this.handlePlaygroundCoursesAdded_).
-    listen(this.userModel_, UserModelEvent.Type.SCHEDULE_COURSES_ADDED, this.handleScheduleCoursesAdded_);
+    listen(this.userModel_, UserModelEvent.Type.SCHEDULE_COURSES_ADDED, this.handleScheduleCoursesAdded_).
+    listen(this.view_, SchedulePlannerEvent.Type.UPDATE_SEARCH, this.handleUpdateSearch_);
+};
+
+
+/**
+ * @parma {!SchedulePlannerEvent} event
+ * @private
+ */
+SchedulePlannerController.prototype.handleUpdateSearch_ = function(event) {
+  window.console.log('TOOD: update search results');
+  /*this.view_.getSearchView().setSearchResults([]);
+  this.view_.getSearchView().setLoading(true);
+  this.xhrController_.getCoursesByQuery(event.query, 0, 100).then(function(courseModels) {
+    var views = [];
+
+    for (var i = 0; i < courseModels.length; i++) {
+      var view = new org.riceapps.views.CourseSearchView(courseModels[i]);
+      view.addDropTarget(this.view_.getPlaygroundView());
+      views.push(view);
+    }
+
+    this.view_.getSearchView().setLoading(false);
+    this.view_.getSearchView().setSearchResults(views);
+  });*/
+  views = [
+    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
+    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
+    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
+    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel)
+  ];
+  for (var i = 0; i < views.length; i++) {
+    views[i].addDropTarget(this.view_.getPlaygroundView());
+  }
+  this.view_.getSearchView().setSearchResults(views);
 };
 
 

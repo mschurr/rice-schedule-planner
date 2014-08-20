@@ -39,6 +39,9 @@ org.riceapps.models.UserModel = function(userId, userName, xrfToken, opt_schedul
   /** @private {string} */
   this.xsrfToken_ = xrfToken;
 
+  /** @private {boolean} */
+  this.hasSeenTour_ = false;
+
   if (opt_playground) {
     this.addCoursesToPlayground(opt_playground);
   }
@@ -73,6 +76,14 @@ UserModel.prototype.getXsrfToken = function() {
  */
 UserModel.prototype.getUserName = function() {
   return this.userName_;
+};
+
+
+/**
+ * @return {boolean
+ */
+UserModel.prototype.hasSeenTour = function() {
+  return this.hasSeenTour_;
 };
 
 

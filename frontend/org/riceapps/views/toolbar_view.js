@@ -1,5 +1,6 @@
 goog.provide('org.riceapps.views.ToolbarView');
 
+goog.require('goog.Timer');
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
 goog.require('goog.dom.classlist');
@@ -8,12 +9,14 @@ goog.require('goog.events.Event');
 goog.require('goog.events.KeyCodes');
 goog.require('goog.events.KeyEvent');
 goog.require('goog.events.EventType');
+goog.require('org.riceapps.events.SchedulePlannerEvent');
 goog.require('org.riceapps.views.CourseView');
 goog.require('org.riceapps.views.SearchView');
 goog.require('org.riceapps.views.TrashView');
 goog.require('org.riceapps.views.View');
 
 goog.scope(function() {
+var SchedulePlannerEvent = org.riceapps.events.SchedulePlannerEvent;
 
 
 
@@ -51,6 +54,12 @@ org.riceapps.views.ToolbarView = function(searchView) {
 
   /** @private {!org.riceapps.views.SearchView} */
   this.searchView_ = searchView;
+
+  /** @private {string} */
+  this.lastSearchQuery_ = '';
+
+  /** @private {number} */
+  this.updateSearchTimer_ = -1;
 };
 goog.inherits(org.riceapps.views.ToolbarView,
               org.riceapps.views.View);
@@ -162,6 +171,8 @@ ToolbarView.prototype.onSearchInputFocus_ = function(opt_event) {
   if (this.searchInput_.value == ToolbarView.DEFAULT_QUERY) {
     this.searchInput_.value = '';
     goog.dom.classlist.add(this.searchInput_, ToolbarView.Theme.INPUT_ACTIVE);
+    this.lastSearchQuery_ = '';
+    this.onSearchQueryChanged_();
     this.searchView_.show();
   }
 };
@@ -174,6 +185,29 @@ ToolbarView.prototype.onSearchInputKeyUp_ = function(event) {
   if (event.keyCode == goog.events.KeyCodes.ESC) {
     this.searchInput_.blur();
   }
+
+  // We want to trigger the search to update 400ms after the user finishes typing to save server-side resources.
+  if (goog.events.KeyCodes.isTextModifyingKeyEvent(event) &&
+      this.searchInput_.value != this.lastSearchQuery_ &&
+      this.searchInput_.value.length > 2 &&
+      this.searchInput_.value != ToolbarView.DEFAULT_QUERY) {
+    this.lastSearchQuery_ = this.searchInput_.value;
+    if (this.updateSearchTimer_ != -1) {
+      goog.Timer.clear(this.updateSearchTimer_);
+    }
+    this.updateSearchTimer_ = goog.Timer.callOnce(this.onSearchQueryChanged_, 400, this);
+  }
+};
+
+
+/**
+ *
+ */
+ToolbarView.prototype.onSearchQueryChanged_ = function() {
+  this.updateSearchTimer_ = -1;
+  var event = new SchedulePlannerEvent(SchedulePlannerEvent.Type.UPDATE_SEARCH);
+  event.query = this.lastSearchQuery_;
+  this.dispatchEvent(event);
 };
 
 

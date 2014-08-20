@@ -53,13 +53,7 @@ TrashView.prototype.getDropContainers = function() {
 /**
  * @override
  */
-TrashView.prototype.drop = function(item) {
-  if (item instanceof org.riceapps.views.AbstractCourseView) {
-    var event = new SchedulePlannerEvent(SchedulePlannerEvent.Type.REMOVE_PLAYGROUND_ITEMS);
-    event.courses = [item];
-    this.dispatchEvent(event);
-  }
-};
+TrashView.prototype.drop = function(item) {};
 
 
 /**

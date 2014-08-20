@@ -19,6 +19,9 @@ org.riceapps.events.SchedulePlannerEvent = function(type) {
 
   /** @type {!Array.<!org.riceapps.models.CourseModel} */
   this.models = [];
+
+  /** @type {string} */
+  this.query = '';
 };
 goog.inherits(org.riceapps.events.SchedulePlannerEvent,
               goog.events.Event);
@@ -29,11 +32,8 @@ var SchedulePlannerEvent = org.riceapps.events.SchedulePlannerEvent;
  * @const {string}
  */
 SchedulePlannerEvent.Type = {
-  REMOVE_PLAYGROUND_ITEMS: 'sp_remove_playground_items',
-  REMOVE_SCHEDULE_ITEMS: 'sp_remove_schedule_items',
-  ADD_PLAYGROUND_ITEMS: 'sp_add_playground_items',
-  ADD_SCHEDULE_ITEMS: 'sp_remove_playground_items',
-  ADD_GUIDE_VIEWS: 'sp_add_guide_views'
+  ADD_GUIDE_VIEWS: 'sp_add_guide_views',
+  UPDATE_SEARCH: 'sp_update_search'
 };
 
 });  // goog.scope

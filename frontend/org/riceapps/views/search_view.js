@@ -21,6 +21,9 @@ org.riceapps.views.SearchView = function() {
 
   /** @private {number} */
   this.hideTimer_ = -1;
+
+  /** @private {Element} */
+  this.resultsContainer_ = null;
 };
 goog.inherits(org.riceapps.views.SearchView,
               org.riceapps.views.View);
@@ -34,7 +37,8 @@ SearchView.Theme = {
   BASE: 'search-view',
   COLUMNS: 'search-view-columns',
   RESULTS: 'search-view-results',
-  FILTERS: 'search-view-filters'
+  FILTERS: 'search-view-filters',
+  RESULTS_CONTAINER: 'search-view-results-container'
 };
 
 
@@ -50,6 +54,10 @@ SearchView.prototype.createDom = function() {
 
   var results = goog.dom.createDom(goog.dom.TagName.DIV, SearchView.Theme.RESULTS);
   goog.dom.appendChild(columns, results);
+
+  var resultsContainer = goog.dom.createDom(goog.dom.TagName.DIV, SearchView.Theme.RESULTS_CONTAINER);
+  goog.dom.appendChild(results, resultsContainer);
+  this.resultsContainer_ = resultsContainer;
 
   var filters = goog.dom.createDom(goog.dom.TagName.DIV, SearchView.Theme.FILTERS);
   goog.dom.appendChild(columns, filters);
@@ -113,5 +121,34 @@ SearchView.prototype.hide = function(opt_preventAnimation) {
     goog.style.setElementShown(this.getElement(), false);
   }
 };
+
+
+/**
+ * @param {boolean} isLoading
+ */
+SearchView.prototype.setLoading = function(isLoading) {
+
+};
+
+
+/**
+ * @param {!Array.<!org.riceapps.views.CourseSearchView>} results
+ */
+SearchView.prototype.setSearchResults = function(results) {
+  this.removeChildren(true);
+
+  for (var i = 0; i < results.length; i++) {
+    this.addChild(results[i], true);
+  }
+};
+
+
+/**
+ * @override
+ */
+SearchView.prototype.getContentElement = function() {
+  return this.resultsContainer_;
+};
+
 
 });
