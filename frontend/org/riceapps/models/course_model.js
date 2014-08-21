@@ -94,6 +94,22 @@ CourseModel.prototype.getInstructor = function() {
 
 
 /**
+ * @return {number}
+ */
+CourseModel.prototype.getCrn = function() {
+  return 22923;
+};
+
+
+/**
+ * @return {string}
+ */
+CourseModel.prototype.getFormattedTermCode = function() {
+  return '201420';
+};
+
+
+/**
  * Returns the four character course subject code (e.g. 'MATH').
  * @return {string}
  */

@@ -22,6 +22,7 @@ var SchedulePlannerEvent = org.riceapps.events.SchedulePlannerEvent;
 
 /**
  * TODO: Show the number of credits in calendar (all, D1, D2, D3)
+ * TODO: Add an export option (for CRNs to Esther)
  *
  * @param {!org.riceapps.views.SearchView}
  * @extends {org.riceapps.views.View}
