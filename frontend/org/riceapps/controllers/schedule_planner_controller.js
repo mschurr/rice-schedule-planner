@@ -276,7 +276,7 @@ SchedulePlannerController.prototype.addCoursesToSchedule = function(courses, opt
 /**
  * @param {goog.events.Event} event
  */
-SchedulePlannerController.prototype.handleDragEnd_ = function(event) {
+SchedulePlannerController.prototype.onCourseViewDragEnd_ = function(event) {
   // Force the calendar view to re-draw items located on the calendar since the guide views will have disappeared.
   this.view_.getCalendarView().relayout();
 };
@@ -291,7 +291,7 @@ SchedulePlannerController.prototype.start = function() {
   this.getHandler().
     listen(this.view_, DraggableView.EventType.CLICK, this.onCourseViewClick_).
     listen(this.view_, DraggableView.EventType.DROPPED, this.onCourseViewDropped_).
-    listen(this.view_, DraggableView.EventType.DRAGEND, this.handleDragEnd_).
+    listen(this.view_, DraggableView.EventType.DRAGEND, this.onCourseViewDragEnd_).
     listen(this.view_, SchedulePlannerEvent.Type.ADD_GUIDE_VIEWS, this.handleAddGuideViews_);
 
   this.xhrController_.getUserModel().then(this.onUserModelReady_, this.onXhrError_, this);

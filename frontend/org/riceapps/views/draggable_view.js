@@ -275,7 +275,7 @@ DraggableView.prototype.handleMouseDown_ = function(event) {
   event.preventDefault();
 
   if (this.dragStartCoordinate_ == null) {
-    window.console.log('initializeMaybeStartDrag_');
+    this.debugLog_('initializeMaybeStartDrag_');
     this.dragStartCoordinate_ = new goog.math.Coordinate(event.clientX, event.clientY);
     this.getHandler().listen(window, goog.events.EventType.MOUSEMOVE, this.maybeStartDrag_);
   }

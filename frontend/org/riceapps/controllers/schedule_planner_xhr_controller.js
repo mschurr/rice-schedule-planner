@@ -52,10 +52,12 @@ SchedulePlannerXhrController.Path = {
  * @return {!goog.Promise.<!org.riceapps.models.UserModel>}
  */
 SchedulePlannerXhrController.prototype.getUserModel = function() {
+  // If we already have a user model, re-use it.
   if (this.userModel_) {
     return goog.Promise.resolve(this.userModel_);
   }
 
+  // Otherwise, we will need to make a request to the server.
   return goog.Promise.resolve(new org.riceapps.models.UserModel(1, 'lol', 'xsrf')).then(function(userModel) {
     this.userModel_ = userModel;
     this.getHandler().

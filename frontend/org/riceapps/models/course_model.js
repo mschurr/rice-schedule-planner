@@ -1,5 +1,6 @@
 goog.provide('org.riceapps.models.CourseModel');
 
+goog.require('goog.Promise');
 goog.require('org.riceapps.models.Model');
 goog.require('org.riceapps.models.InstructorModel');
 
@@ -17,6 +18,22 @@ org.riceapps.models.CourseModel = function() {
 goog.inherits(org.riceapps.models.CourseModel,
               org.riceapps.models.Model);
 var CourseModel = org.riceapps.models.CourseModel;
+
+
+/**
+ * @param {Object} json
+ */
+CourseModel.fromJson = function(json) {
+  if (!json) {
+    return null;
+  }
+
+  var model = new CourseModel();
+
+  // TODO(mschurr@rice.edu): Copy the values.
+
+  return model;
+};
 
 
 
@@ -172,6 +189,15 @@ CourseModel.prototype.getDistributionTwoCredits = function() {
  */
 CourseModel.prototype.getDistributionThreeCredits = function() {
   return 0;
+};
+
+
+/**
+ * Returns all sections of the current course (including this one).
+ * @return {!goog.Promise.<!Array.<!CourseModel>>}
+ */
+CourseModel.prototype.getAllSections = function() {
+  return goog.Promise.resolve([this]);
 };
 
 });  // goog.scope

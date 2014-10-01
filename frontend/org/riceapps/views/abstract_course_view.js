@@ -87,13 +87,22 @@ AbstractCourseView.prototype.handleDragStart_ = function(event) {
   // NOTE: Add the guide views to the child index directly after the course view so that position on calendar will not
   // change.
   this.removeGuideViews_();
-  this.guideViews_ = [];
 
-  var guideView = new org.riceapps.views.CourseCalendarGuideView(this.courseModel_, this.getChildInsertionIndex());
-  this.addDropTarget(guideView);
-  this.guideViews_.push(guideView);
+  this.courseModel_.getAllSections().then(function(courseModels) {
+    if (!this.isBeingDragged()) {
+      return;
+    }
 
-  this.dispatchEvent(new goog.events.Event(SchedulePlannerEvent.Type.ADD_GUIDE_VIEWS));
+    this.guideViews_ = [];
+
+    for (var i = 0; i < courseModels.length; i++) {
+      var guideView = new org.riceapps.views.CourseCalendarGuideView(courseModels[i], this.getChildInsertionIndex());
+      this.addDropTarget(guideView);
+      this.guideViews_.push(guideView);
+    }
+
+    this.dispatchEvent(new goog.events.Event(SchedulePlannerEvent.Type.ADD_GUIDE_VIEWS));
+  }, undefined, this);
 };
 
 

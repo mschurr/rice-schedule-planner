@@ -6,9 +6,12 @@ goog.require('goog.dom.classlist');
 goog.require('goog.style');
 goog.require('org.riceapps.fx.Animation');
 goog.require('org.riceapps.views.View');
+goog.require('org.riceapps.utils.DomUtils');
+
 
 goog.scope(function() {
 var Animation = org.riceapps.fx.Animation;
+var DomUtils = org.riceapps.utils.DomUtils;
 
 
 
@@ -61,6 +64,29 @@ SearchView.prototype.createDom = function() {
 
   var filters = goog.dom.createDom(goog.dom.TagName.DIV, SearchView.Theme.FILTERS);
   goog.dom.appendChild(columns, filters);
+  this.createFiltersDom(filters);
+};
+
+
+/**
+ * @param {!Element} container
+ */
+SearchView.prototype.createFiltersDom = function(container) {
+  var d1 = DomUtils.createCheckbox('d[]', '1', 'Distribution 1', true);
+  var d2 = DomUtils.createCheckbox('d[]', '2', 'Distribution 2', true);
+  var d3 = DomUtils.createCheckbox('d[]', '3', 'Distribution 3', true);
+  var conflicts = DomUtils.createCheckbox('filter_conflicts', '1', 'Hide conflicts');
+  var full = DomUtils.createCheckbox('filter_full', '1', 'Hide full courses');
+  // credit hours
+  // school
+  // department
+  // instructor
+
+  goog.dom.appendChild(container, d1);
+  goog.dom.appendChild(container, d2);
+  goog.dom.appendChild(container, d3);
+  goog.dom.appendChild(container, conflicts);
+  goog.dom.appendChild(container, full);
 };
 
 
