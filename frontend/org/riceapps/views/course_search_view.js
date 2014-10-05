@@ -9,7 +9,6 @@ goog.require('org.riceapps.layouts.CalendarLayout.Item');
 goog.require('org.riceapps.models.CourseModel');
 goog.require('org.riceapps.utils.DomUtils');
 goog.require('org.riceapps.views.AbstractCourseView');
-goog.require('org.riceapps.views.CourseSearchView');
 
 goog.scope(function() {
 var DomUtils = org.riceapps.utils.DomUtils;

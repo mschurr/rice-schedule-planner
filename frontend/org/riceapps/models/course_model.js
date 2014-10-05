@@ -197,7 +197,7 @@ CourseModel.prototype.getDistributionThreeCredits = function() {
  * @return {!goog.Promise.<!Array.<!CourseModel>>}
  */
 CourseModel.prototype.getAllSections = function() {
-  return goog.Promise.resolve([this]);
+  return goog.Promise.resolve([this, this, this]);
 };
 
 });  // goog.scope

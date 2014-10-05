@@ -8,6 +8,9 @@
     -> UserResponseProtocolMessage
 */
 
+/**
+ * A request for the retrieval of courses from the database.
+ */
 class CoursesRequestProtocolMessage {
   public /*string*/  $xsrfToken;
   public /*int*/     $userId;
@@ -18,6 +21,10 @@ class CoursesRequestProtocolMessage {
   public /*boolean*/ $showDistribution3;
   public /*boolean*/ $hideFull;
   public /*boolean*/ $hideConflicts;
+  public /*int*/     $offset;
+  public /*int*/     $limit;
+  public /*int*/     $year;
+  public /*int*/     $term;
 
   public function validate() {
     if ($this->keywords === null ||
@@ -426,6 +433,7 @@ class SchedulePlannerProtocolMessageUtility {
   public /*CoursesProtocolMessage*/ function createCoursesResponse(/*CoursesRequestProtocolMessage*/ $request) {
     $response = new CoursesProtocolMessage;
 
+    // TODO(mschurr@): Query based on request params.
     $stmt = $this->db->prepare("SELECT * FROM `courses`;");
     $query = $stmt->execute([]);
 

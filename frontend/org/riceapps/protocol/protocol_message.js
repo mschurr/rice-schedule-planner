@@ -1,4 +1,4 @@
-goog.provide('org.riceapps.proto.ProtocolMessage');
+goog.provide('org.riceapps.protocol.ProtocolMessage');
 
 goog.scope(function() {
 
@@ -7,8 +7,8 @@ goog.scope(function() {
 /**
  * @constructor
  */
-org.riceapps.proto.ProtocolMessage = function() {};
-var ProtocolMessage = org.riceapps.proto.ProtocolMessage;
+org.riceapps.protocol.ProtocolMessage = function() {};
+var ProtocolMessage = org.riceapps.protocol.ProtocolMessage;
 
 
 /**

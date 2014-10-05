@@ -1,16 +1,16 @@
-goog.provide('org.riceapps.proto.CoursesRequest');
+goog.provide('org.riceapps.protocol.CoursesRequest');
 
-goog.require('org.riceapps.proto.ProtocolMessage');
+goog.require('org.riceapps.protocol.ProtocolMessage');
 
 goog.scope(function() {
 
 
 
 /**
- * @extends {org.riceapps.proto.ProtocolMessage}
+ * @extends {org.riceapps.protocol.ProtocolMessage}
  * @constructor
  */
-org.riceapps.proto.CoursesRequest = function() {
+org.riceapps.protocol.CoursesRequest = function() {
   goog.base(this);
 
   /** @type {number} */
@@ -39,9 +39,21 @@ org.riceapps.proto.CoursesRequest = function() {
 
   /** @type {boolean} */
   this.hideConflicts = true;
+
+  /** @type {number} */
+  this.offset = 0;
+
+  /** @type {number} */
+  this.limit = 100;
+
+  /** @type {number} */
+  this.term = 0;
+
+  /** @type {number} */
+  this.year = 0;
 };
-goog.inherits(org.riceapps.proto.CoursesRequest,
-              org.riceapps.proto.ProtocolMessage);
-var CoursesRequest = org.riceapps.proto.CoursesRequest;
+goog.inherits(org.riceapps.protocol.CoursesRequest,
+              org.riceapps.protocol.ProtocolMessage);
+var CoursesRequest = org.riceapps.protocol.CoursesRequest;
 
 });  // goog.scope

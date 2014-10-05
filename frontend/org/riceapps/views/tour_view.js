@@ -35,7 +35,6 @@ org.riceapps.views.TourView = function(schedulePlannerView) {
 
   /** @private {number} */
   this.transitionTimer_ = -1;
-  window['debugObj'] = this;
 };
 goog.inherits(org.riceapps.views.TourView,
               org.riceapps.views.View);
@@ -46,7 +45,7 @@ var TourView = org.riceapps.views.TourView;
 TourView.Theme = {
   BASE: 'tour-view',
   OVERLAY: 'tour-view-overlay',
-  FRAME: 'tour-view-frame',
+  FRAME: 'tour-view-frame'
 };
 
 

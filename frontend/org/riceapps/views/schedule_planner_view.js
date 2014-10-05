@@ -62,7 +62,7 @@ var SchedulePlannerView = org.riceapps.views.SchedulePlannerView;
 SchedulePlannerView.Theme = {
   BASE: 'schedule-planner-view',
   COLUMNS: 'schedule-planner-view-columns',
-  COLUMN: 'schedule-planner-view-column',
+  COLUMN: 'schedule-planner-view-column'
 };
 
 
