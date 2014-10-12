@@ -4,11 +4,14 @@ goog.require('goog.Promise');
 goog.require('goog.Uri');
 goog.require('goog.Uri.QueryData');
 goog.require('goog.events.Event');
+goog.require('goog.net.XhrIo');
 goog.require('org.riceapps.controllers.Controller');
 goog.require('org.riceapps.models.UserModel');
+goog.require('org.riceapps.protocol.Messages');
 goog.require('org.riceapps.events.UserModelEvent');
 
 goog.scope(function() {
+var Messages = org.riceapps.protocol.Messages;
 var UserModelEvent = org.riceapps.events.UserModelEvent;
 
 
@@ -75,16 +78,21 @@ SchedulePlannerXhrController.prototype.getUserModel = function() {
  * @return {!goog.Promise<boolean>}
  */
 SchedulePlannerXhrController.prototype.pushUserModel = function() {
+  var request = /** @type {Messages.UserRequest} */ ({
+    userId: 0,
+    xsrfToken: "",
+    hasSeenTour: false,
+    playground: {
+      courses: [0]
+    },
+    schedule: {
+      courses: [0]
+    }
+  });
+
+  window.console.log('xhr dispatch: pushing user model to server ', request);
+
   return goog.Promise.resolve(true);
-};
-
-
-/**
- * Retrieves a course model from the server.
- * @return {!goog.Promise.<!org.riceapps.models.CourseModel>}
- */
-SchedulePlannerXhrController.prototype.getCourseModel = function(courseId) {
-  return goog.Promise.resolve(new org.riecapps.models.CourseModel());
 };
 
 
@@ -94,6 +102,7 @@ SchedulePlannerXhrController.prototype.getCourseModel = function(courseId) {
  */
 SchedulePlannerXhrController.prototype.onPlaygroundCoursesAdded_ = function(event) {
   window.console.log('xhr dispatch: playground_add ', event.courses);
+  this.pushUserModel();
 };
 
 
@@ -103,6 +112,7 @@ SchedulePlannerXhrController.prototype.onPlaygroundCoursesAdded_ = function(even
  */
 SchedulePlannerXhrController.prototype.onPlaygroundCoursesRemoved_ = function(event) {
   window.console.log('xhr dispatch: playground_remove ', event.courses);
+  this.pushUserModel();
 };
 
 
@@ -112,6 +122,7 @@ SchedulePlannerXhrController.prototype.onPlaygroundCoursesRemoved_ = function(ev
  */
 SchedulePlannerXhrController.prototype.onScheduleCoursesAdded_ = function(event) {
   window.console.log('xhr dispatch: schedule_add ', event.courses);
+  this.pushUserModel();
 };
 
 
@@ -121,6 +132,7 @@ SchedulePlannerXhrController.prototype.onScheduleCoursesAdded_ = function(event)
  */
 SchedulePlannerXhrController.prototype.onScheduleCoursesRemoved_ = function(event) {
   window.console.log('xhr dispatch: schedule_remove ', event.courses);
+  this.pushUserModel();
 };
 
 
@@ -161,14 +173,12 @@ SchedulePlannerXhrController.prototype.getAllCourseSessions = function(courseMod
 
 
 /**
- * Returns all courses matching the provided query string.
- * @param {string} query
+ * Returns all courses matching the provided query.
+ * @param {!Messages.CoursesRequest} request
  * @return {!goog.Promise.<!Array.<!CourseModel>>}
  */
-SchedulePlannerXhrController.prototype.getCoursesByQuery = function(query, offset, limit) {
+SchedulePlannerXhrController.prototype.getCourses = function(request) {
   return goog.Promise.resolve([]);
 };
-
-
 
 });  // goog.scope

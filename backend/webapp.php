@@ -32,7 +32,13 @@ scope(function() {
 
 	// Route: Access Restricted Pages
 	Route::filter($authFilter, function() {
-		Route::get('/', '__Main');
+		Route::get('/', function(Request $request, Response $response) {
+			if ($request->get->has('deb')) {
+				return View::make('SchedulePlannerDevelopment');
+			}
+
+			return View::make('SchedulePlanner');
+		});
 	});
 
 	// Route: API Access Restricted Pages

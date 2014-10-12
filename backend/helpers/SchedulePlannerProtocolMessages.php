@@ -51,6 +51,17 @@ class CoursesRequestProtocolMessage {
       return false;
     }
 
+    if (!is_integer($this->offset) ||
+        !is_integer($this->limit) ||
+        !is_integer($this->year) ||
+        !is_integer($this->term) ||
+        $this->offset < 0 ||
+        $this->year < 0 ||
+        $this->limit < 0 ||
+        $this->limit > 100) {
+      return false;
+    }
+
     return parent::validate();
   }
 }
