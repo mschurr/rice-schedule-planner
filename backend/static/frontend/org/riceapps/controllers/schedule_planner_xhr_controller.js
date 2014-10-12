@@ -49,7 +49,8 @@ SchedulePlannerXhrController.XSRF_PARAM_NAME = '_xsrf';
 
 /** @enum {string} */
 SchedulePlannerXhrController.Path = {
-  USER: '/api/user'
+  USER: '/api/user',
+  COURSES: '/api/courses'
 };
 
 

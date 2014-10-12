@@ -171,7 +171,7 @@ html, body {
 
 .footer-view .footer-view-links a {
   display: inline-block;
-  margin-left: 20;
+  margin-left: 20px;
   color: #999;
   text-decoration: underline;
 }
