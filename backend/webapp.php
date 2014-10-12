@@ -33,7 +33,7 @@ scope(function() {
 	// Route: Access Restricted Pages
 	Route::filter($authFilter, function() {
 		Route::get('/', function(Request $request, Response $response) {
-			if ($request->get->has('deb')) {
+			if ($request->get->has('uncompiled')) {
 				return View::make('SchedulePlannerDevelopment');
 			}
 

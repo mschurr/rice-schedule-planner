@@ -36,7 +36,10 @@ var SchedulePlannerXhrController = org.riceapps.controllers.SchedulePlannerXhrCo
  */
 SchedulePlannerXhrController.ErrorType = {
   SESSION_EXPIRED: 'session_expired',
-  XSRF_EXPIRED: 'xsrf_expired'
+  XSRF_EXPIRED: 'xsrf_expired',
+  PARSE_ERROR: 'parse_erorr',
+  NETWORK_FAILURE: 'network_failure',
+  UNKNOWN: 'unknown'
 };
 
 
@@ -46,8 +49,16 @@ SchedulePlannerXhrController.XSRF_PARAM_NAME = '_xsrf';
 
 /** @enum {string} */
 SchedulePlannerXhrController.Path = {
-
+  USER: '/api/user'
 };
+
+
+/** @const {string} */
+SchedulePlannerXhrController.XSSI_PREFIX = "')]}\n";
+
+
+/** @const {number} */
+SchedulePlannerXhrController.DEFAULT_TIMEOUT = 2000;
 
 
 /**
@@ -61,7 +72,35 @@ SchedulePlannerXhrController.prototype.getUserModel = function() {
   }
 
   // Otherwise, we will need to make a request to the server.
-  return goog.Promise.resolve(new org.riceapps.models.UserModel(1, 'lol', 'xsrf')).then(function(userModel) {
+  return new goog.Promise(function(resolve, reject) {
+    var url = this.buildXhrUrl(SchedulePlannerXhrController.Path.USER, {});
+
+    goog.net.XhrIo.send(url, goog.bind(function(event) {
+      var xhr = event.target;
+
+      if (!xhr.isSuccess()) {
+        reject(SchedulePlannerXhrController.ErrorType.NETWORK_FAILURE);
+        return;
+      }
+
+      if (xhr.getStatus() !== 200) {
+        reject(SchedulePlannerXhrController.ErrorType.SESSION_EXPIRED);
+        return;
+      }
+
+      var data;
+
+      try {
+        data = /** @type {org.riceapps.protocol.Messages.User} */
+            (xhr.getResponseJson(SchedulePlannerXhrController.XSSI_PREFIX));
+      } catch (error) {
+        reject(SchedulePlannerXhrController.ErrorType.PARSE_ERROR);
+        return;
+      }
+
+      resolve(new org.riceapps.models.UserModel(data));
+    }, this), 'GET', undefined, undefined, SchedulePlannerXhrController.DEFAULT_TIMEOUT);
+  }, this).then(function(userModel) {
     this.userModel_ = userModel;
     this.getHandler().
       listen(this.userModel_, UserModelEvent.Type.PLAYGROUND_COURSES_ADDED, this.onPlaygroundCoursesAdded_).

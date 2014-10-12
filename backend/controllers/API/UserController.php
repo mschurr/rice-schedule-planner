@@ -9,7 +9,7 @@ class UserController extends Controller {
 
   public function get() {
     $message = $this->utility->createUserModel($this->session);
-    $this->response->json(ProtocolMessage::serialize($message));
+    $this->response->json(ProtocolMessage::serialize($message), true);
   }
 
   public function post() {

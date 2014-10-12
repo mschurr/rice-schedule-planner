@@ -4,6 +4,7 @@ goog.require('goog.array');
 goog.require('org.riceapps.events.UserModelEvent');
 goog.require('org.riceapps.models.Model');
 goog.require('org.riceapps.models.CourseModel');
+goog.require('org.riceapps.protocol.Messages');
 goog.require('org.riceapps.utils.FakeData');
 
 goog.scope(function() {
@@ -13,16 +14,14 @@ var UserModelEvent = org.riceapps.events.UserModelEvent;
 
 
 /**
- * @param {number} userId
- * @param {string} userName
- * @param {string} xsrfToken
- * @param {Array.<!CourseModel>=} opt_schedule
- * @param {Array.<!CourseModel>=} opt_playground
+ * @param {!org.riceapps.protocol.Messages.User} data
  * @extends {org.riceapps.models.Model}
  * @constructor
  */
-org.riceapps.models.UserModel = function(userId, userName, xrfToken, opt_schedule, opt_playground) {
+org.riceapps.models.UserModel = function(data) {
   goog.base(this);
+
+  // TODO(mschurr@): Add the playground and schedule courses from the protocol message. Remove the fake data['
 
   /** @private {!Array.<!CourseModel>} */
   this.schedule_ = [];
@@ -31,24 +30,16 @@ org.riceapps.models.UserModel = function(userId, userName, xrfToken, opt_schedul
   this.playground_ = org.riceapps.utils.FakeData.getCourseModels(10);
 
   /** @private {number} */
-  this.userId_ = userId;
+  this.userId_ = data['userId'];
 
   /** @private {string} */
-  this.userName_ = userName;
+  this.userName_ = data['userName'];
 
   /** @private {string} */
-  this.xsrfToken_ = xrfToken;
+  this.xsrfToken_ = data['xrfToken'];
 
   /** @private {boolean} */
-  this.hasSeenTour_ = false;
-
-  if (opt_playground) {
-    this.addCoursesToPlayground(opt_playground);
-  }
-
-  if (opt_schedule) {
-    this.addCoursesToSchedule(opt_schedule);
-  }
+  this.hasSeenTour_ = data['hasSeenTour'];
 };
 goog.inherits(org.riceapps.models.UserModel,
               org.riceapps.models.Model);
