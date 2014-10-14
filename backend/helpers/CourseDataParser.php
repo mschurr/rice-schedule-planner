@@ -530,6 +530,11 @@ class CourseDataParser {
    * Returns the current university year (based on the current date).
    */
   public static /*int*/ function getCurrentYear() {
+      $term = static::getCurrentTerm();
+
+      if ($term == 'Fall') {
+        return ((int) date('Y')) + 1; // ...Apparently courses.rice.edu needs this.
+      }
       return (int) date('Y');
   }
 
