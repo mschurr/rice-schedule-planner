@@ -59,4 +59,5 @@ FRONT-END:
     - Add a list view (similar to the previous schedule planner) so that students can use either view.
 
     - Certain courses cannot be displayed on the calendar because they are not scheduled (e.g. research courses).
-      We need to come up with a way to allow these courses to be scheduled.
+      We need to come up with a way to allow these courses to be scheduled. These courses also usually have
+      variable credit hours.

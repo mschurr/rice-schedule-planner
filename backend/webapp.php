@@ -33,11 +33,11 @@ scope(function() {
 	// Route: Access Restricted Pages
 	Route::filter($authFilter, function() {
 		Route::get('/', function(Request $request, Response $response) {
-			if (Config::get('app.development', false) && $request->get->has('uncompiled')) {
+			if (Config::get('app.development', false)) {
 				return View::make('SchedulePlannerDevelopment');
+			} else {
+				return View::make('SchedulePlanner');
 			}
-
-			return View::make('SchedulePlanner');
 		});
 	});
 

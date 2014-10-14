@@ -237,30 +237,22 @@ SchedulePlannerController.prototype.onUserModelReady_ = function(userModel) {
  */
 SchedulePlannerController.prototype.handleUpdateSearch_ = function(event) {
   window.console.log('TOOD: update search results');
-  /*this.view_.getSearchView().setSearchResults([]);
-  this.view_.getSearchView().setLoading(true);
-  this.xhrController_.getCoursesByQuery(event.query, 0, 100).then(function(courseModels) {
-    var views = [];
-
-    for (var i = 0; i < courseModels.length; i++) {
-      var view = new org.riceapps.views.CourseSearchView(courseModels[i]);
-      view.addDropTarget(this.view_.getPlaygroundView());
-      views.push(view);
-    }
-
-    this.view_.getSearchView().setLoading(false);
-    this.view_.getSearchView().setSearchResults(views);
-  });*/
-  views = [
-    /*new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
-    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
-    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
-    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel)*/
-  ];
-  for (var i = 0; i < views.length; i++) {
-    views[i].addDropTarget(this.view_.getPlaygroundView());
+  if (!this.coursesModel_) {
+    return;
   }
+
+  this.view_.getSearchView().setLoading(true);
+  var results = this.coursesModel_.getCoursesByQuery(event.query, this.userModel_);
+  var views = [];
+
+  for (var i = 0; i < results.length; i++) {
+    var view = new org.riceapps.views.CourseSearchView(results[i]);
+    view.addDropTarget(this.view_.getPlaygroundView());
+    views.push(view);
+  }
+
   this.view_.getSearchView().setSearchResults(views);
+  this.view_.getSearchView().setLoading(false);
 };
 
 

@@ -23,6 +23,9 @@ org.riceapps.models.CourseModel = function(data, coursesModel) {
 
   /** @private {!org.riceapps.models.CoursesModel} */
   this.coursesModel_ = coursesModel;
+
+  /** @private {Array.<!org.riceapps.models.CourseModel>} */
+  this.otherSections_ = null;
 };
 goog.inherits(org.riceapps.models.CourseModel,
               org.riceapps.models.Model);
@@ -184,7 +187,12 @@ CourseModel.prototype.getDistributionThreeCredits = function() {
  * @return {!goog.Promise.<!Array.<!CourseModel>>}
  */
 CourseModel.prototype.getAllSections = function() {
-  return goog.Promise.resolve([this]);
+  if (this.otherSections_) { // Cache since this calculating this is potentially expensive.
+    return this.otherSections_;
+  }
+
+  this.otherSections_ = this.coursesModel_.getAllSections(this);
+  return this.otherSections_;
 };
 
 });  // goog.scope
