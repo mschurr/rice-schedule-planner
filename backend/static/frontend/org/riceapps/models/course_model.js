@@ -68,12 +68,43 @@ CourseModel.prototype.getMeetingTimes = function() {
     // format returned by the back-end differs from the values expected by
     // the other front-end components.
     var time = this.data_['meetingTimes'][i];
-    times.push({
+    var t = {
       'day' : time['day'] - 1,
       'start' : time['start'] / 60,
       'end' : time['end'] / 60,
       'location' : time['building'] + ' ' + time['room']
-    });
+    };
+    times.push(t);
+  }
+
+  return times;
+};
+
+
+/**
+ * Returns all course meeting times that can be displayed on the calendar.
+ * @return {!Array.<!CourseModel.MeetingTime>}
+ */
+CourseModel.prototype.getCalendarMeetingTimes = function() {
+  var times = [];
+
+  for (var i = 0; i < this.data_['meetingTimes'].length; i++) {
+    // NOTICE: The reason for subtraction and division here is because the
+    // format returned by the back-end differs from the values expected by
+    // the other front-end components.
+    var time = this.data_['meetingTimes'][i];
+    var t = {
+      'day' : time['day'] - 1,
+      'start' : time['start'] / 60,
+      'end' : time['end'] / 60,
+      'location' : time['building'] + ' ' + time['room']
+    };
+
+    if (t['day'] < 0 || t['day'] > 4) {
+      continue;
+    }
+
+    times.push(t);
   }
 
   return times;

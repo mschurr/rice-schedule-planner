@@ -111,7 +111,7 @@ CourseCalendarView.prototype.getCalendarTimes = function() {
   if (this.isBeingDragged()) {
     return [];
   } else {
-    return this.getCourseModel().getMeetingTimes();
+    return this.getCourseModel().getCalendarMeetingTimes();
   }
 };
 

@@ -111,7 +111,7 @@ CourseCalendarGuideView.prototype.removeBoxes_ = function() {
  * @override
  */
 CourseCalendarGuideView.prototype.getCalendarTimes = function() {
-  return this.courseModel_.getMeetingTimes();
+  return this.courseModel_.getCalendarMeetingTimes();
 };
 
 

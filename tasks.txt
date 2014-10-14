@@ -61,3 +61,5 @@ FRONT-END:
     - Certain courses cannot be displayed on the calendar because they are not scheduled (e.g. research courses).
       We need to come up with a way to allow these courses to be scheduled. These courses also usually have
       variable credit hours.
+
+    - Categorization should also take into account cross-listing.
