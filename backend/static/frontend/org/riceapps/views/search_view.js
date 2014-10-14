@@ -72,6 +72,7 @@ SearchView.prototype.createDom = function() {
  * @param {!Element} container
  */
 SearchView.prototype.createFiltersDom = function(container) {
+  var normal = DomUtils.createCheckbox('nd', '1', 'Non-Distribution', true);
   var d1 = DomUtils.createCheckbox('d[]', '1', 'Distribution 1', true);
   var d2 = DomUtils.createCheckbox('d[]', '2', 'Distribution 2', true);
   var d3 = DomUtils.createCheckbox('d[]', '3', 'Distribution 3', true);
@@ -82,6 +83,7 @@ SearchView.prototype.createFiltersDom = function(container) {
   // department
   // instructor
 
+  goog.dom.appendChild(container, normal);
   goog.dom.appendChild(container, d1);
   goog.dom.appendChild(container, d2);
   goog.dom.appendChild(container, d3);

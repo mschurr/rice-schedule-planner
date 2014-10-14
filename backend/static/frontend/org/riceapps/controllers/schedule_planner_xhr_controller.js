@@ -4,8 +4,10 @@ goog.require('goog.Promise');
 goog.require('goog.Uri');
 goog.require('goog.Uri.QueryData');
 goog.require('goog.events.Event');
+goog.require('goog.json');
 goog.require('goog.net.XhrIo');
 goog.require('org.riceapps.controllers.Controller');
+goog.require('org.riceapps.models.CoursesModel');
 goog.require('org.riceapps.models.UserModel');
 goog.require('org.riceapps.protocol.Messages');
 goog.require('org.riceapps.events.UserModelEvent');
@@ -25,6 +27,9 @@ org.riceapps.controllers.SchedulePlannerXhrController = function() {
 
   /** @private {org.riceapps.models.UserModel} */
   this.userModel_ = null;
+
+  /** @private {org.riceapps.models.CoursesModel} */
+  this.userModel_ = null;
 };
 goog.inherits(org.riceapps.controllers.SchedulePlannerXhrController,
               org.riceapps.controllers.Controller);
@@ -37,8 +42,9 @@ var SchedulePlannerXhrController = org.riceapps.controllers.SchedulePlannerXhrCo
 SchedulePlannerXhrController.ErrorType = {
   SESSION_EXPIRED: 'session_expired',
   XSRF_EXPIRED: 'xsrf_expired',
-  PARSE_ERROR: 'parse_erorr',
+  PARSE_ERROR: 'parse_error',
   NETWORK_FAILURE: 'network_failure',
+  ACCESS_VIOLATION: 'access_violation',
   UNKNOWN: 'unknown'
 };
 
@@ -59,7 +65,7 @@ SchedulePlannerXhrController.XSSI_PREFIX = "')]}\n";
 
 
 /** @const {number} */
-SchedulePlannerXhrController.DEFAULT_TIMEOUT = 2000;
+SchedulePlannerXhrController.DEFAULT_TIMEOUT = 20000;
 
 
 /**
@@ -114,25 +120,122 @@ SchedulePlannerXhrController.prototype.getUserModel = function() {
 
 
 /**
+ * Retrieves the courses model from the server.
+ * @return {!goog.Promise.<!org.riceapps.models.CoursesModel>}
+ */
+SchedulePlannerXhrController.prototype.getAllCourses = function() {
+  // If we already have a courses model, re-use it.
+  if (this.coursesModel_) {
+    return goog.Promise.resolve(this.coursesModel_);
+  }
+
+  // Otherwise, pull the information from the server.
+  return new goog.Promise(function(resolve, reject) {
+    var url = this.buildXhrUrl(SchedulePlannerXhrController.Path.COURSES, {});
+
+    goog.net.XhrIo.send(url, goog.bind(function(event) {
+      var xhr = event.target;
+
+      if (!xhr.isSuccess()) {
+        reject(SchedulePlannerXhrController.ErrorType.NETWORK_FAILURE);
+        return;
+      }
+
+      if (xhr.getStatus() !== 200) {
+        reject(SchedulePlannerXhrController.ErrorType.SESSION_EXPIRED);
+        return;
+      }
+
+      var data;
+
+      try {
+        data = /** @type {org.riceapps.protocol.Messages.Courses} */
+            (xhr.getResponseJson(SchedulePlannerXhrController.XSSI_PREFIX));
+      } catch (error) {
+        reject(SchedulePlannerXhrController.ErrorType.PARSE_ERROR);
+        return;
+      }
+
+      resolve(new org.riceapps.models.CoursesModel(data));
+    }, this), 'GET', undefined, undefined, SchedulePlannerXhrController.DEFAULT_TIMEOUT);
+  }, this).then(function(coursesModel) {
+    this.coursesModel_ = coursesModel;
+    return coursesModel;
+  }, undefined, this);
+};
+
+
+/**
  * Pushes the user model to the remote server, synchronizing any properties changed client-side to the server.
  * @return {!goog.Promise<boolean>}
  */
 SchedulePlannerXhrController.prototype.pushUserModel = function() {
   var request = /** @type {Messages.UserRequest} */ ({
-    userId: 0,
-    xsrfToken: "",
-    hasSeenTour: false,
-    playground: {
-      courses: [0]
+    'userId': this.userModel_.getUserId(),
+    'xsrfToken': this.userModel_.getXsrfToken(),
+    'hasSeenTour': this.userModel_.hasSeenTour(),
+    'playground': {
+      'courses': []
     },
-    schedule: {
-      courses: [0]
+    'schedule': {
+      'courses': []
     }
   });
 
+  var schedule = this.userModel_.getCoursesInSchedule();
+
+  for (var i = 0; i < schedule.length; i++) {
+    request['schedule']['courses'].push(/** @type {Messages.SimpleCourse} */ ({
+      'courseId': schedule[i].getId()
+    }));
+  }
+
+  var playground = this.userModel_.getCoursesInPlayground();
+
+  for (var i = 0; i < playground.length; i++) {
+    request['playground']['courses'].push(/** @type {Messages.SimpleCourse} */ ({
+      'courseId': playground[i].getId()
+    }));
+  }
+
   window.console.log('xhr dispatch: pushing user model to server ', request);
 
-  return goog.Promise.resolve(true);
+  return new goog.Promise(function(resolve, reject) {
+    var url = this.buildXhrUrl(SchedulePlannerXhrController.Path.USER, {});
+    var data = goog.Uri.QueryData.createFromMap({
+      '_proto': goog.json.serialize(request)
+    });
+
+    goog.net.XhrIo.send(url, goog.bind(function(event) {
+      var xhr = event.target;
+
+      if (!xhr.isSuccess()) {
+        reject(SchedulePlannerXhrController.ErrorType.NETWORK_FAILURE);
+        return;
+      }
+
+      if (xhr.getStatus() == 400) {
+        reject(SchedulePlannerXhrController.ErrorType.PARSE_ERROR);
+        return;
+      }
+
+      if (xhr.getStatus() == 401) {
+        reject(SchedulePlannerXhrController.ErrorType.SESSION_EXPIRED);
+        return;
+      }
+
+      if (xhr.getStatus() == 403) {
+        reject(SchedulePlannerXhrController.ErrorType.XSRF_EXPIRED);
+        return;
+      }
+
+      if (xhr.getStatus() == 200) {
+        resolve(true);
+      } else {
+        reject(SchedulePlannerXhrController.ErrorType.UNKNOWN);
+      }
+    }, this), 'POST', data.toString(), undefined, SchedulePlannerXhrController.DEFAULT_TIMEOUT);
+  }, this);
 };
 
 
@@ -182,9 +285,9 @@ SchedulePlannerXhrController.prototype.onScheduleCoursesRemoved_ = function(even
  * @return {!goog.Uri}
  */
 SchedulePlannerXhrController.prototype.buildXhrUrl = function(path, params) {
-  if (this.userModel_) {
+  /*if (this.userModel_) {
     params[SchedulePlannerXhrController.XSRF_PARAM_NAME] = this.userModel_.getXsrfToken();
-  }
+  }*/
 
   return goog.Uri.parse(window.location).
       setFragment('').

@@ -8,7 +8,7 @@ goog.require('org.riceapps.models.CourseModel');
  */
 org.riceapps.utils.FakeData.getCourseModels = function(count) {
   var models = [];
-
+  /*
   var model = new org.riceapps.models.CourseModel();
   model.getMeetingTimes = function() {
     return [{
@@ -141,7 +141,7 @@ org.riceapps.utils.FakeData.getCourseModels = function(count) {
       }];
   };
   models.push(model);
-
+  */
 
   return models;
 };

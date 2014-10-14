@@ -21,13 +21,14 @@ var UserModelEvent = org.riceapps.events.UserModelEvent;
 org.riceapps.models.UserModel = function(data) {
   goog.base(this);
 
-  // TODO(mschurr@): Add the playground and schedule courses from the protocol message. Remove the fake data['
+  /** @private {?org.riceapps.protocol.Messages.User} */
+  this.protocolMessage_ = data;
 
   /** @private {!Array.<!CourseModel>} */
   this.schedule_ = [];
 
   /** @private {!Array.<!CourseModel>} */
-  this.playground_ = org.riceapps.utils.FakeData.getCourseModels(10);
+  this.playground_ = [];
 
   /** @private {number} */
   this.userId_ = data['userId'];
@@ -36,7 +37,7 @@ org.riceapps.models.UserModel = function(data) {
   this.userName_ = data['userName'];
 
   /** @private {string} */
-  this.xsrfToken_ = data['xrfToken'];
+  this.xsrfToken_ = data['xsrfToken'];
 
   /** @private {boolean} */
   this.hasSeenTour_ = data['hasSeenTour'];
@@ -44,6 +45,27 @@ org.riceapps.models.UserModel = function(data) {
 goog.inherits(org.riceapps.models.UserModel,
               org.riceapps.models.Model);
 var UserModel = org.riceapps.models.UserModel;
+
+
+/**
+ * @param {!org.riceapps.models.CoursesModel} coursesModel
+ */
+UserModel.prototype.initialize = function(coursesModel) {
+  var playground = this.protocolMessage_['playground']['courses'];
+  var schedule = this.protocolMessage_['schedule']['courses'];
+
+  for (var i = 0; i < playground.length; i++) {
+    var course = coursesModel.getCourseById(playground[i]['courseId']);
+    this.playground_.push(course);
+  }
+
+  for (var i = 0; i < schedule.length; i++) {
+    var course = coursesModel.getCourseById(schedule[i]['courseId']);
+    this.schedule_.push(course);
+  }
+
+  this.protocolMessage_ = null;
+}
 
 
 /**

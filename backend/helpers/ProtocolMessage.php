@@ -42,8 +42,17 @@ class ProtocolMessage {
     return $serial;
   }
 
-  public /*ProtocolMessage*/ function unserialize(/*string*/ $serializedProtocolMessage) {
+  public /*ProtocolMessage*/ static function unserialize(/*string*/ $serializedProtocolMessage, /*string*/ $type = null) {
     $deserialized = from_json($serializedProtocolMessage);
+
+    if ($type !== null) {
+      $deserialized['__messageType'] = 'UserRequestProtocolMessage';
+    }
+
+    if (!isset($deserialized['__errorCode'])) {
+      $deserialized['__errorCode'] = ProtocolMessageError::NONE;
+    }
+
     return static::unserialize_obj($deserialized);
   }
 
@@ -58,10 +67,12 @@ class ProtocolMessage {
 
     $message = new $deserialized['__messageType']();
 
-    foreach ($message as $key => $value) {
-      if (!property_exists($message, $key)) {
+    foreach ($message as $key => $_) {
+      if (!isset($deserialized[$key])) {
         throw new ProtocolMessageDeserializationException('Unrecognized property ' . $key);
       }
+
+      $value = $deserialized[$key];
 
       if (is_array($value) && isset($value['__messageType'])) {
         $value = static::unserialize_obj($value);

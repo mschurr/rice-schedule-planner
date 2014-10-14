@@ -13,22 +13,26 @@ class UserController extends Controller {
   }
 
   public function post() {
-    // NOTE: We don't catch exceptions, because the framework will catch them and display a 400 Bad Request error.
-    $message = ProtocolMessage::unserialize($this->request->post['_proto']);
+    $message = null;
+    try {
+      $message = ProtocolMessage::unserialize($this->request->post['_proto'], 'UserRequestProtocolMessage');
+    } catch (ProtocolMessageException $e) {
+      return 400;
+    }
 
     if ($message->userId != $this->user->id) {
       return 400;
     }
 
     if (!$this->utility->checkXsrfToken($this->session, $message->xsrfToken)) {
-      return 400;
+      return 401;
     }
 
     // TODO(mschurr@): Update database based on the following properties:
-    $this->user->setProperty(SchedulePlannerProtocolMessageUtility::TOUR_PROPERTY, $mesage->hasSeenTour === true);
+    $this->user->setProperty(SchedulePlannerProtocolMessageUtility::TOUR_PROPERTY, $message->hasSeenTour === true);
     //public /*PlaygroundProtocolMessage*/ $playground;
     //public /*ScheduleProtocolMessage */ $schedule;
 
-    return 200;
+    $this->response->write('200 OK');
   }
 }

@@ -9,7 +9,7 @@ class CoursesController extends Controller {
 
   public function get() {
     $response = $this->utility->createCoursesResponse(null);
-    $this->response->json(ProtocolMessage::serialize($response));
+    $this->response->json(ProtocolMessage::serialize($response), true);
   }
 
   public function post() {

@@ -3,38 +3,30 @@ goog.provide('org.riceapps.models.CourseModel');
 goog.require('goog.Promise');
 goog.require('org.riceapps.models.Model');
 goog.require('org.riceapps.models.InstructorModel');
+goog.require('org.riceapps.protocol.Messages');
 
 goog.scope(function() {
 
 
 
 /**
+ * @param {!org.riceapps.protocol.Messages.Course} data
+ * @param {!org.riceapps.models.CoursesModel} coursesModel
  * @extends {org.riceapps.models.Model}
  * @constructor
  */
-org.riceapps.models.CourseModel = function() {
+org.riceapps.models.CourseModel = function(data, coursesModel) {
   goog.base(this);
+
+  /** @private {!org.riceapps.protocol.Messages.Course} */
+  this.data_ = data;
+
+  /** @private {!org.riceapps.models.CoursesModel} */
+  this.coursesModel_ = coursesModel;
 };
 goog.inherits(org.riceapps.models.CourseModel,
               org.riceapps.models.Model);
 var CourseModel = org.riceapps.models.CourseModel;
-
-
-/**
- * @param {Object} json
- */
-CourseModel.fromJson = function(json) {
-  if (!json) {
-    return null;
-  }
-
-  var model = new CourseModel();
-
-  // TODO(mschurr@rice.edu): Copy the values.
-
-  return model;
-};
-
 
 
 /**
@@ -58,7 +50,7 @@ CourseModel.MeetingTime;
  * @return {number}
  */
 CourseModel.prototype.getId = function() {
-  return 1;
+  return this.data_['courseId'];
 };
 
 
@@ -66,27 +58,22 @@ CourseModel.prototype.getId = function() {
  * @return {!Array.<!CourseModel.MeetingTime>}
  */
 CourseModel.prototype.getMeetingTimes = function() {
-  return [{
-      "day" : 0,
-      "start" : 9,
-      "end" : 11,
-      "location" : 'RZR 121'
-    }, {
-      "day" : 2,
-      "start" : 9,
-      "end" : 11,
-      "location" : 'RZR 121'
-    }, {
-      "day" : 4,
-      "start" : 9,
-      "end" : 11,
-      "location" : 'RZR 121'
-    }, {
-      "day" : 2,
-      "start" : 13,
-      "end" : 14.5,
-      "location" : 'RZR 121'
-    }];
+  var times = [];
+
+  for (var i = 0; i < this.data_['meetingTimes'].length; i++) {
+    // NOTICE: The reason for subtraction and division here is because the
+    // format returned by the back-end differs from the values expected by
+    // the other front-end components.
+    var time = this.data_['meetingTimes'][i];
+    times.push({
+      'day' : time['day'] - 1,
+      'start' : time['start'] / 60,
+      'end' : time['end'] / 60,
+      'location' : time['building'] + ' ' + time['room']
+    });
+  }
+
+  return times;
 };
 
 
@@ -114,7 +101,7 @@ CourseModel.prototype.getInstructor = function() {
  * @return {number}
  */
 CourseModel.prototype.getCrn = function() {
-  return 22923;
+  return this.data_['crn'];
 };
 
 
@@ -131,7 +118,7 @@ CourseModel.prototype.getFormattedTermCode = function() {
  * @return {string}
  */
 CourseModel.prototype.getSubject = function() {
-  return 'COLL';
+  return this.data_['subject'];
 };
 
 
@@ -140,7 +127,7 @@ CourseModel.prototype.getSubject = function() {
  * @return {number}
  */
 CourseModel.prototype.getCourseNumber = function() {
-  return 144;
+  return this.data_['courseNumber'];
 };
 
 
@@ -148,7 +135,7 @@ CourseModel.prototype.getCourseNumber = function() {
  * @return {string}
  */
 CourseModel.prototype.getTitle = function() {
-  return 'COLL 144: @' + goog.getUid(this);
+  return this.data_['subject'] + " " + this.data_['courseNumber'] + ": " + this.data_['title'];
 };
 
 
@@ -197,7 +184,7 @@ CourseModel.prototype.getDistributionThreeCredits = function() {
  * @return {!goog.Promise.<!Array.<!CourseModel>>}
  */
 CourseModel.prototype.getAllSections = function() {
-  return goog.Promise.resolve([this, this, this]);
+  return goog.Promise.resolve([this]);
 };
 
 });  // goog.scope

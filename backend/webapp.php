@@ -13,7 +13,7 @@ scope(function() {
 			return true;
 		}
 
-		return 403; // HTTP 403 Unauthorized
+		return 401; // HTTP 401 Unauthorized
 	};
 
 	// Filter: If the user is logged in, allow the request. Otherwise, redirect them to the login page.
@@ -33,7 +33,7 @@ scope(function() {
 	// Route: Access Restricted Pages
 	Route::filter($authFilter, function() {
 		Route::get('/', function(Request $request, Response $response) {
-			if ($request->get->has('uncompiled')) {
+			if (Config::get('app.development', false) && $request->get->has('uncompiled')) {
 				return View::make('SchedulePlannerDevelopment');
 			}
 

@@ -7,8 +7,9 @@ goog.require('org.riceapps.controllers.Controller');
 goog.require('org.riceapps.controllers.SchedulePlannerXhrController');
 goog.require('org.riceapps.events.SchedulePlannerEvent');
 goog.require('org.riceapps.events.UserModelEvent');
-goog.require('org.riceapps.models.UserModel');
 goog.require('org.riceapps.models.CourseModel');
+goog.require('org.riceapps.models.CoursesModel');
+goog.require('org.riceapps.models.UserModel');
 goog.require('org.riceapps.views.CourseView');
 goog.require('org.riceapps.views.CourseCalendarView');
 goog.require('org.riceapps.views.CourseCalendarGuideView');
@@ -44,6 +45,9 @@ org.riceapps.controllers.SchedulePlannerController = function() {
 
   /** @private {!org.riceapps.models.UserModel} */
   this.userModel_ = null;
+
+  /** @private {!org.riceapps.models.CoursesModel} */
+  this.coursesModel_ = null;
 
   /** @private {number} */
   this.calendarInsertAt_ = 0;
@@ -86,12 +90,15 @@ SchedulePlannerController.prototype.onCourseViewDropped_ = function(event) {
      event.target instanceof org.riceapps.views.CourseCalendarView) {
     // Update the user model.
     this.calendarInsertAt_ = event.target.getParent().indexOfChild(event.target);
-    this.userModel_.removeCoursesFromSchedule([event.target.getCourseModel()]);
-    this.userModel_.addCoursesToSchedule([event.dropTarget.getCourseModel()]);
 
-    // Dispose of the view.
-    event.target.getParent().removeChild(event.target, true);
-    event.target.dispose();
+    if (event.target.getCourseModel().getId() != event.dropTarget.getCourseModel().getId()) {
+      this.userModel_.removeCoursesFromSchedule([event.target.getCourseModel()]);
+      this.userModel_.addCoursesToSchedule([event.dropTarget.getCourseModel()]);
+
+      // Dispose of the view.
+      event.target.getParent().removeChild(event.target, true);
+      event.target.dispose();
+    }
   }
 
   // Move an item from the playground to the calendar.
@@ -180,11 +187,28 @@ SchedulePlannerController.prototype.handleScheduleCoursesAdded_ = function(event
 
 
 /**
- * @param {!org.riceapps.models.UserModel}
+ * @param {!org.riceapps.models.CoursesModel}
  * @private
  */
-SchedulePlannerController.prototype.onUserModelReady_ = function(userModel) {
-  this.userModel_ = userModel;
+SchedulePlannerController.prototype.onCoursesReady_ = function(coursesModel) {
+  window.console.log('SchedulePlannerController.onCoursesReady_', coursesModel);
+  this.coursesModel_ = coursesModel;
+  this.onUserModelAndCoursesReady_();
+};
+
+
+/**
+ * @param {!org.riceapps.models.CoursesModel}
+ * @private
+ */
+SchedulePlannerController.prototype.onUserModelAndCoursesReady_ = function() {
+  if (!(this.userModel_ && this.coursesModel_)) {
+    return;
+  }
+
+  window.console.log('SchedulePlannerController.onUserModelAndCoursesReady_');
+
+  this.userModel_.initialize(this.coursesModel_);
   this.addCoursesToPlayground(this.userModel_.getCoursesInPlayground());
   this.addCoursesToSchedule(this.userModel_.getCoursesInSchedule());
 
@@ -194,6 +218,16 @@ SchedulePlannerController.prototype.onUserModelReady_ = function(userModel) {
     listen(this.userModel_, UserModelEvent.Type.PLAYGROUND_COURSES_ADDED, this.handlePlaygroundCoursesAdded_).
     listen(this.userModel_, UserModelEvent.Type.SCHEDULE_COURSES_ADDED, this.handleScheduleCoursesAdded_).
     listen(this.view_, SchedulePlannerEvent.Type.UPDATE_SEARCH, this.handleUpdateSearch_);
+}
+
+/**
+ * @param {!org.riceapps.models.UserModel}
+ * @private
+ */
+SchedulePlannerController.prototype.onUserModelReady_ = function(userModel) {
+  window.console.log('SchedulePlannerController.onUserModelReady_', userModel);
+  this.userModel_ = userModel;
+  this.onUserModelAndCoursesReady_();
 };
 
 
@@ -218,10 +252,10 @@ SchedulePlannerController.prototype.handleUpdateSearch_ = function(event) {
     this.view_.getSearchView().setSearchResults(views);
   });*/
   views = [
+    /*new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
     new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
     new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
-    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel),
-    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel)
+    new org.riceapps.views.CourseSearchView(new org.riceapps.models.CourseModel)*/
   ];
   for (var i = 0; i < views.length; i++) {
     views[i].addDropTarget(this.view_.getPlaygroundView());
@@ -237,6 +271,10 @@ SchedulePlannerController.prototype.handleUpdateSearch_ = function(event) {
 SchedulePlannerController.prototype.onXhrError_ = function(errorType) {
   // TODO(mschurr@rice.edu): Error handling.
   window.console.log('[ERROR] [CRITICAL] Failed to fetch user model.');
+
+  /*if (errorType == SchedulePlannerXhrController.ErrorType.SESSION_EXPIRED) {
+    // TODO(mschurr): Block all access to the UI, display message to the user informing them to refresh the page.
+  }*/
 };
 
 
@@ -295,6 +333,7 @@ SchedulePlannerController.prototype.start = function() {
     listen(this.view_, SchedulePlannerEvent.Type.ADD_GUIDE_VIEWS, this.handleAddGuideViews_);
 
   this.xhrController_.getUserModel().then(this.onUserModelReady_, this.onXhrError_, this);
+  this.xhrController_.getAllCourses().then(this.onCoursesReady_, this.onXhrError_, this);
 };
 
 });  // goog.scope
