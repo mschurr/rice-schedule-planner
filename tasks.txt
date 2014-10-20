@@ -15,29 +15,29 @@ FRONT-END:
     - CourseModel needs to be updated to properly use all of the information from the underlying protocol message.
       Currently, some of the data is still hard-coded. Additional methods may need to be added.
 
-    - Usability Improvement: Clean up the calendar view a little bit by making the guide views for different
+    - [MARK] Usability Improvement: Clean up the calendar view a little bit by making the guide views for different
       sections be different colors to give user easier visual cues (relevant files: AbstractCourseView,
       CourseCalendarGuideView, CourseCalendarView).
 
-    - Conditions in which search view shows and is hidden are currently wacky. Should be fixed.
-
     - Add an (x) in the top right corner of the search bar that clears the search text and hides the search view.
 
-    - Usability Improvement: When the calendar view contains no items, it should show instructions for the user to
+    - [DEREK] Usability Improvement: When the calendar view contains no items, it should show instructions for the user to
       drag a view from the playground onto the calendar.
 
-    - Usability Improvement: When the playground view contains no items, it should show instructions for the user to
+    - [DEREK] Usability Improvement: When the playground view contains no items, it should show instructions for the user to
       drag a view from the search view onto the playground.
 
-    - Usability Improvement: When the search view is open but has no results to display, instructions should be shown
+    - [DEREK] Usability Improvement: When the search view is open but has no results to display, instructions should be shown
       to the user on how to use the search system (filters, drag results into playground, etc).
 
     - Implement the navigation bar (NavigationBarView). The bar should display the user's network ID, a title, a logout
       link (to /logout), and a help link that will bring up the tour (TourView).
 
-    - Implement search functionality (SearchView) for filters and a better strign matching algoritm. This can be done
+    - [ETHAN] Implement search functionality (SearchView) for filters and a better strign matching algoritm. This can be done
       entirely client-side by adding Search API calls to CoursesModel and using them to update the SearchView when the
       user changes filters or types in the text field.
+
+    - [ETHAN] Conditions in which search view shows and is hidden are currently wacky. Should be fixed.
 
     - Implement the CourseModalView, a popup which displays information about ALL SECTIONS of a given course (when
       initiated from a course click in the playground view, search view, or calendar view).

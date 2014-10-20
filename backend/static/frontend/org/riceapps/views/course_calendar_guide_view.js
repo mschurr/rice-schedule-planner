@@ -54,6 +54,9 @@ CourseCalendarGuideView.Theme = {
   'BASE': 'course-calendar-guide-view'
 };
 
+/** @const {!Array.<string>} */
+CourseCalendarGuideView.Colors = ['#FFFFFF'];
+
 
 /**
  * @const {goog.math.Rect}

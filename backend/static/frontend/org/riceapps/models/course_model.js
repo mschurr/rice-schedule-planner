@@ -215,7 +215,7 @@ CourseModel.prototype.getDistributionThreeCredits = function() {
 
 /**
  * Returns all sections of the current course (including this one).
- * @return {!goog.Promise.<!Array.<!CourseModel>>}
+ * @return {!Array.<!CourseModel>}
  */
 CourseModel.prototype.getAllSections = function() {
   if (this.otherSections_) { // Cache since this calculating this is potentially expensive.
