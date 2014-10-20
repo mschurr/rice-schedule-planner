@@ -11,14 +11,17 @@ FRONT-END COMMUNICATION:
   - SchedulePlannerController and SchedulePlannerXhrController need some event-based communication mechanism.
 
 FRONT-END:
-  HIGH PRIORITY:
-    - Times that cannot be rendered on the calendar should not be returned by CourseModel::getMeetingTimes, or the
-      calendar should be able to account for invalid times and not draw them. Currently, index out of bounds errors
-      are resulting from this problem (see CourseModel, CalendarLayout).
-
   MEDIUM PRIORITY:
     - CourseModel needs to be updated to properly use all of the information from the underlying protocol message.
       Currently, some of the data is still hard-coded. Additional methods may need to be added.
+
+    - Usability Improvement: Clean up the calendar view a little bit by making the guide views for different
+      sections be different colors to give user easier visual cues (relevant files: AbstractCourseView,
+      CourseCalendarGuideView, CourseCalendarView).
+
+    - Conditions in which search view shows and is hidden are currently wacky. Should be fixed.
+
+    - Add an (x) in the top right corner of the search bar that clears the search text and hides the search view.
 
     - Usability Improvement: When the calendar view contains no items, it should show instructions for the user to
       drag a view from the playground onto the calendar.
@@ -29,37 +32,35 @@ FRONT-END:
     - Usability Improvement: When the search view is open but has no results to display, instructions should be shown
       to the user on how to use the search system (filters, drag results into playground, etc).
 
-    - Implement the drop guide views on the calendar to show for all sessions of the provided course when any section
-      is picked up (see AbstractCourseView, CourseModel::getAllSections). Note: CourseModel::getAllSections should be
-      rewritten to no longer use futures.
-
     - Implement the navigation bar (NavigationBarView). The bar should display the user's network ID, a title, a logout
       link (to /logout), and a help link that will bring up the tour (TourView).
 
-    - Implement TourView, an interactive slideshow that explains how to use the application. The tour should be shown
-      to each user automatically the first time they view the application, and should not be shown on subsequent visits.
-      You can check against or set the value of hasSeenTour on the UserModel.
+    - Implement search functionality (SearchView) for filters and a better strign matching algoritm. This can be done
+      entirely client-side by adding Search API calls to CoursesModel and using them to update the SearchView when the
+      user changes filters or types in the text field.
 
-    - Implement search functionality (SearchView). This can be done entirely client-side by adding Search API calls to
-      CoursesModel and using them to update the SearchView when the user changes filters or types in the text field.
-
-    - Implement the CourseModalView, a popup which displays information about a given course.
+    - Implement the CourseModalView, a popup which displays information about ALL SECTIONS of a given course (when
+      initiated from a course click in the playground view, search view, or calendar view).
 
     - Show the number of credits in schedule on the toolbar (broken down for all, D1, D2, D3).
 
     - Add an option to export courses for registration (just a pop-up with a list of CRNs that ESTHER requires). This
       option should be clickable from the Toolbar.
 
+    - Implement TourView, an interactive slideshow that explains how to use the application. The tour should be shown
+      to each user automatically the first time they view the application, and should not be shown on subsequent visits.
+      You can check against or set the value of hasSeenTour on the UserModel.
+
     - Add right-click context menu to all course views in calendar and playground w/ options:
       * Remove (removes the course from either the calendar or playground)
       * View Evaluations (brings up the course evalations page within ESTHER)
       * View Information (brings a course modal view for the given course)
 
+    - Add a list view (similar to the previous schedule planner) so that students can use either view. The list view
+      should appear beneath the calendar view.
+
   LOW PRIORITY:
-    - Add a list view (similar to the previous schedule planner) so that students can use either view.
 
     - Certain courses cannot be displayed on the calendar because they are not scheduled (e.g. research courses).
       We need to come up with a way to allow these courses to be scheduled. These courses also usually have
       variable credit hours.
-
-    - Categorization should also take into account cross-listing.
